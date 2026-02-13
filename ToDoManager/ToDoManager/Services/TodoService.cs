@@ -13,7 +13,7 @@ namespace ToDoManager.Services {
         #region フィールド
         private List<TodoItem> FItems = new List<TodoItem>();
         private int FNextId = 1;
-        private string C_FilePath = "todos.xml";
+        private static readonly string C_FilePath = "todos.xml";
         #endregion
 
         /// <summary>
@@ -33,17 +33,35 @@ namespace ToDoManager.Services {
         }
 
         /// <summary>
+        /// ToDoアイテムの入力値を検証する
+        /// </summary>
+        /// <param name="vTitle">タイトル</param>
+        /// <param name="vContent">内容</param>
+        /// <exception cref="ArgumentException">バリデーションエラー時</exception>
+        public static void ValidateItem(string vTitle, string vContent) {
+            if (string.IsNullOrWhiteSpace(vTitle)) throw new ArgumentException("タイトルを入力してください。");
+
+            if (vTitle.Length > 20) throw new ArgumentException($"タイトルは20文字以内で入力してください。現在の文字数:{vTitle.Length}");
+
+            if (vContent != null && vContent.Length > 150) throw new ArgumentException($"内容は150文字以内で入力してください。現在の文字数:{vContent.Length}");
+        }
+
+        /// <summary>
         /// ToDoアイテムを追加または更新
         /// </summary>
         /// <param name="vItem">追加または更新するToDoアイテム</param>
         public void AddOrUpdate(TodoItem vItem) {
             if (vItem == null) throw new ArgumentNullException(nameof(vItem));
 
+            ValidateItem(vItem.Title, vItem.Content);
+
             if (vItem.Id == 0) {
                 Add(vItem);
             } else {
                 Update(vItem);
             }
+
+            Export();
         }
 
         /// <summary>
@@ -86,7 +104,7 @@ namespace ToDoManager.Services {
             var wSerializer = new XmlSerializer(typeof(List<TodoItem>));
             var wStreamReader = new StreamReader(C_FilePath);
             FItems = (List<TodoItem>)wSerializer.Deserialize(wStreamReader);
-            
+
 
             FNextId = FItems.Any() ? FItems.Max(x => x.Id) + 1 : 1;
 
