@@ -62,9 +62,7 @@ namespace ToDoManager {
         }
 
         private void DeleteItem() {
-            var wSelectedItem = FLstItems.SelectedItem as TodoItem;
-
-            if (wSelectedItem == null) {
+            if (!(FLstItems.SelectedItem is TodoItem wSelectedItem)) {
                 MessageBox.Show("削除する項目を選択してください。", "確認", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }

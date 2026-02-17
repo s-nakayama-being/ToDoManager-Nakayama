@@ -53,9 +53,7 @@ namespace ToDoManager.Services {
         public void Delete(int vId) {
             var wItem = FItems.FirstOrDefault(x => x.Id == vId);
 
-            if (wItem != null) {
-                FItems.Remove(wItem);
-            }
+            if (wItem != null) FItems.Remove(wItem);
         }
 
         /// <summary>
