@@ -38,8 +38,6 @@ namespace ToDoManager {
                     try {
                         FService.AddOrUpdate(wForm.Item);
                         UpdateList();
-                    } catch (ArgumentException wEx) {
-                        MessageBox.Show(this, wEx.Message, "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     } catch (Exception wEx) {
                         MessageBox.Show(this, $"保存に失敗しました：{wEx.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }

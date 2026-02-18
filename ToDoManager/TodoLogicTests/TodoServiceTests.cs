@@ -10,6 +10,7 @@ namespace ToDoManagerTests {
     /// </summary>
     [TestFixture]
     public class TodoServiceTests {
+        #region 基本機能テスト
         /// <summary>
         /// AddOrUpdateで新規アイテムが追加されること
         /// </summary>
@@ -37,7 +38,9 @@ namespace ToDoManagerTests {
             Assert.AreEqual(1, wItems.Count);
             Assert.AreEqual("Updated", wItems[0].Title);
         }
+        #endregion
 
+        #region ソート機能テスト
         /// <summary>
         /// SortByDueDateで期限順にソートされること
         /// </summary>
@@ -73,49 +76,56 @@ namespace ToDoManagerTests {
             Assert.AreEqual("Test1", wItems[0].Title);
             Assert.AreEqual("Test2", wItems[1].Title);
         }
+        #endregion
 
-        #region バリデーションテスト
-
-        [TestCase("", "内容", "タイトルを入力してください")]
-        [TestCase("   ", "内容", "タイトルを入力してください")]
-        [TestCase(null, "内容", "タイトルを入力してください")]
-        public void ValidateItemはタイトルが無効な場合に例外をスローする(string vTitle, string vContent, string vExpectedErrorMsg) {
-            var wEx = Assert.Throws<ArgumentException>(() => TodoService.ValidateItem(vTitle, vContent));
-
-            Assert.That(wEx.Message, Does.Contain(vExpectedErrorMsg));
-        }
-
-        [TestCase(20, false, Description = "境界値：20文字は正常")]
-        [TestCase(21, true, Description = "境界値：21文字は例外")]
-        public void ValidateItemはタイトルの文字数境界を正しく判定する(int vLength, bool vShouldThrow) {
+        #region バリデーション機能テスト
+        [TestCase(1, "内容", Description = "タイトル1文字(最小値)：正常系")]
+        [TestCase(20, "内容", Description = "タイトル20文字(最大値)：正常系")]
+        public void ValidateItem_タイトルが1文字以上20文字以内の場合_例外が発生しない(int vLength, string vContent) {
             var wTitle = new string('a', vLength);
 
-            if (vShouldThrow) {
-                var wEx = Assert.Throws<ArgumentException>(() => TodoService.ValidateItem(wTitle, "内容"));
-
-                Assert.That(wEx.Message, Does.Contain("タイトルは20文字以内で入力してください。"));
-            } else {
-                Assert.DoesNotThrow(() => TodoService.ValidateItem(wTitle, "内容"));
-            }
+            Assert.That(() => TodoService.ValidateItem(wTitle, vContent), Throws.Nothing);
         }
 
-        [TestCase(150, false, Description = "境界値：150文字は正常")]
-        [TestCase(151, true, Description = "境界値：151文字は例外")]
-        public void ValidateItemは内容の文字数境界を正しく判定する(int vLength, bool vShouldThrow) {
-            var wContent = new string('a', vLength);
+        [TestCase("", "内容", "タイトルを入力してください", Description = "タイトル空：異常系")]
+        [TestCase(null, "内容", "タイトルを入力してください", Description = "タイトル空：異常系")]
+        [TestCase("   ", "内容", "タイトルを入力してください", Description = "タイトル空白：異常系")]
+        public void ValidateItem_タイトルが空または空白の場合_ArgumentExceptionが発生する(string vTitle, string vContent, string vExpectedErrorMsg) {
+            Assert.That(() => TodoService.ValidateItem(vTitle, vContent), Throws.ArgumentException.With.Message.Contain(vExpectedErrorMsg));
+        }
 
-            if (vShouldThrow) {
-                var wEx = Assert.Throws<ArgumentException>(() => TodoService.ValidateItem("Title", wContent));
+        [TestCase(21, "内容", "タイトルは20文字以内で入力してください。", Description = "タイトル21文字(境界値)：異常系")]
+        public void ValidateItem_タイトルが21文字以上の場合_ArgumentExceptionが発生する(int vLength, string vContent, string vExpectedErrorMsg) {
+            var wTitle = new string('a', vLength);
 
-                Assert.That(wEx.Message, Does.Contain("内容は150文字以内で入力してください。"));
-            } else {
-                Assert.DoesNotThrow(() => TodoService.ValidateItem("Title", wContent));
-            }
+            Assert.That(() => TodoService.ValidateItem(wTitle, vContent), Throws.ArgumentException.With.Message.Contain(vExpectedErrorMsg));
         }
 
         [Test]
-        public void ValidateItemはタイトル前後の空白をトリムせず許容する() {
-            Assert.DoesNotThrow(() => TodoService.ValidateItem(" a ", "内容"));
+        public void ValidateItem_タイトル前後に空白がある場合_空白をトリムせず許容する() {
+            Assert.That(() => TodoService.ValidateItem(" a ", "内容"), Throws.Nothing);
+        }
+
+        [TestCase("タイトル", "", Description = "内容空：正常系")]
+        [TestCase("タイトル", null, Description = "内容空：正常系")]
+        [TestCase("タイトル", "   ", Description = "内容空白：正常系")]
+        public void ValidateItem_内容が空または空白の場合_例外が発生しない(string vTitle, string vContent) {
+            Assert.That(() => TodoService.ValidateItem(vTitle, vContent), Throws.Nothing);
+        }
+
+
+        [TestCase("タイトル", 150, Description = "内容150文字(最大値)：正常系")]
+        public void ValidateItem_内容が0文字以上150字以内の場合_例外が発生しない(string vTitle, int vLength) {
+            var wContent = new string('a', vLength);
+
+            Assert.That(() => TodoService.ValidateItem(vTitle, wContent), Throws.Nothing);
+        }
+
+        [TestCase("タイトル", 151, "内容は150文字以内で入力してください。", Description = "内容151文字(境界値)：異常系")]
+        public void ValidateItem_内容が151文字以上の場合_ArgumentExceptionが発生する(string vTitle, int vLength, string vExpectedErrorMsg) {
+            var wContent = new string('a', vLength);
+
+            Assert.That(() => TodoService.ValidateItem(vTitle, wContent), Throws.ArgumentException.With.Message.Contain(vExpectedErrorMsg));
         }
         #endregion
     }

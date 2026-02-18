@@ -53,15 +53,11 @@ namespace ToDoManager.Services {
         public void AddOrUpdate(TodoItem vItem) {
             if (vItem == null) throw new ArgumentNullException(nameof(vItem));
 
-            ValidateItem(vItem.Title, vItem.Content);
-
             if (vItem.Id == 0) {
                 Add(vItem);
             } else {
                 Update(vItem);
             }
-
-            Export();
         }
 
         /// <summary>

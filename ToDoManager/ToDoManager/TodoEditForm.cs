@@ -32,27 +32,21 @@ namespace ToDoManager {
 
         #region privateメソッド
         /// <summary>
-        /// 入力内容をItemに反映しバリデーションする
+        /// バリデーションを実行してToDoアイテムを保存する
         /// </summary>
         private void SaveItem() {
-            var wTitle = FTxtTitle.Text;
-            var wContent = FTxtContent.Text;
-
             try {
-                TodoService.ValidateItem(wTitle, wContent);
-
                 Item.Title = FTxtTitle.Text;
                 Item.Content = FTxtContent.Text;
                 Item.DueDate = FDtpDueDate.Value;
                 Item.IsCompleted = FChkDone.Checked;
 
+                TodoService.ValidateItem(Item.Title, Item.Content);
+
                 DialogResult = DialogResult.OK;
                 Close();
-
             } catch (ArgumentException wEx) {
-                MessageBox.Show(wEx.Message, "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                
-                return;
+                MessageBox.Show(wEx.Message, "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
         #endregion
