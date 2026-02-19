@@ -66,8 +66,14 @@ namespace ToDoManager {
         private void FBtnAdd_Click(object sender, EventArgs e) => AddItem();
         private void FBtnEdit_Click(object sender, EventArgs e) => EditItem();
         private void FBtnXml_Click(object sender, EventArgs e) => FService.Export();
-        private void SortByDueDateToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByDueDate();
-        private void SortByAddedOrderToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByAddedOrder();
+        private void SortByDueDateToolStripMenuItem_Click(object sender, EventArgs e) {
+            FService.SortByDueDate();
+            UpdateList();
+        }
+        private void SortByAddedOrderToolStripMenuItem_Click(object sender, EventArgs e) {
+            FService.SortByAddedOrder();
+            UpdateList();
+        }
         private void FBtnXmlLoad_Click(object sender, EventArgs e) {
             if (FService.Import()) {
                 UpdateList();
