@@ -66,6 +66,8 @@
             this.sortByAddedOrderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FBtnDelete = new System.Windows.Forms.Button();
             this.FBtnEdit = new System.Windows.Forms.Button();
+            this.FTxtSearch = new System.Windows.Forms.TextBox();
+            this.FBtnSearch = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -269,11 +271,31 @@
             this.FBtnEdit.UseVisualStyleBackColor = true;
             this.FBtnEdit.Click += new System.EventHandler(this.FBtnEdit_Click);
             // 
+            // FTxtSearch
+            // 
+            this.FTxtSearch.Location = new System.Drawing.Point(12, 38);
+            this.FTxtSearch.Name = "FTxtSearch";
+            this.FTxtSearch.Size = new System.Drawing.Size(174, 22);
+            this.FTxtSearch.TabIndex = 15;
+            this.FTxtSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FTxtSearch_KeyDown);
+            // 
+            // FBtnSearch
+            // 
+            this.FBtnSearch.Location = new System.Drawing.Point(192, 38);
+            this.FBtnSearch.Name = "FBtnSearch";
+            this.FBtnSearch.Size = new System.Drawing.Size(52, 24);
+            this.FBtnSearch.TabIndex = 16;
+            this.FBtnSearch.Text = "検索";
+            this.FBtnSearch.UseVisualStyleBackColor = true;
+            this.FBtnSearch.Click += new System.EventHandler(this.FBtnSearch_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(920, 672);
+            this.Controls.Add(this.FBtnSearch);
+            this.Controls.Add(this.FTxtSearch);
             this.Controls.Add(this.FBtnEdit);
             this.Controls.Add(this.FBtnDelete);
             this.Controls.Add(this.menuStrip1);
@@ -305,5 +327,7 @@
         private System.Windows.Forms.ToolStripMenuItem 削除DToolStripMenuItem;
         private System.Windows.Forms.Button FBtnEdit;
         private System.Windows.Forms.ToolStripMenuItem 編集EToolStripMenuItem;
+        private System.Windows.Forms.TextBox FTxtSearch;
+        private System.Windows.Forms.Button FBtnSearch;
     }
 }

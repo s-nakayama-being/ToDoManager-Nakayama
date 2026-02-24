@@ -128,6 +128,16 @@ namespace ToDoManager.Services {
                 }
             }
         }
+
+        /// <summary>
+        /// タイトルの部分一致で検索
+        /// </summary>
+        /// <param name="vKeyword">検索キーワード</param>
+        public IEnumerable<TodoItem> SearchByTitle(string vKeyword) {
+            if (string.IsNullOrEmpty(vKeyword)) return FItems;
+
+            return FItems.Where(x => x.Title.IndexOf(vKeyword, StringComparison.OrdinalIgnoreCase) >= 0);
+        }
         #endregion
     }
 }

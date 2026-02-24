@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using ToDoManager.Models;
 using ToDoManager.Services;
@@ -22,9 +24,12 @@ namespace ToDoManager {
         /// <summary>
         /// ToDoリストを更新
         /// </summary>
-        private void UpdateList() {
+        private void UpdateList(IEnumerable<TodoItem> vTargetItems = null) {
             FLstItems.Items.Clear();
-            foreach (var wItem in FService.GetItems()) FLstItems.Items.Add(wItem);
+
+            var wItems = vTargetItems ?? FService.GetItems();
+
+            FLstItems.Items.AddRange(wItems.ToArray());
         }
         #endregion
 
@@ -59,6 +64,14 @@ namespace ToDoManager {
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// 部分一致でタイトルを検索した結果をToDoリストに表示
+        /// </summary>
+        private void SearchItem() {
+            var wResult = FService.SearchByTitle(FTxtSearch.Text);
+            UpdateList(wResult);
         }
 
         private void DeleteItem() {
@@ -97,6 +110,13 @@ namespace ToDoManager {
 
         private void 削除DToolStripMenuItem_Click(object sender, EventArgs e) => DeleteItem();
         private void 編集EToolStripMenuItem_Click(object sender, EventArgs e) => EditItem();
+        private void FBtnSearch_Click(object sender, EventArgs e) => SearchItem();
+        private void FTxtSearch_KeyDown(object sender, KeyEventArgs e) {
+            if (e.KeyCode == Keys.Enter) {
+                e.SuppressKeyPress = true;
+                SearchItem();
+            }
+        }
         #endregion
     }
 }
