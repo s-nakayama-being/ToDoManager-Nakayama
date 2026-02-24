@@ -13,7 +13,7 @@ namespace ToDoManager.Services {
         #region フィールド
         private List<TodoItem> FItems = new List<TodoItem>();
         private int FNextId = 1;
-        private string C_FilePath = "todos.xml";
+        private static readonly string C_FilePath = "todos.xml";
         #endregion
 
         /// <summary>
@@ -44,6 +44,16 @@ namespace ToDoManager.Services {
             } else {
                 Update(vItem);
             }
+        }
+
+        /// <summary>
+        /// 指定したToDoアイテムを削除
+        /// </summary>
+        /// <param name="vId">削除対象のID</param>
+        public void Delete(int vId) {
+            var wItem = FItems.FirstOrDefault(x => x.Id == vId);
+
+            if (wItem != null) FItems.Remove(wItem);
         }
 
         /// <summary>
