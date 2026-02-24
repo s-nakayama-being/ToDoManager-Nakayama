@@ -213,6 +213,7 @@
             // 
             // sortByDueDateToolStripMenuItem
             // 
+            this.sortByDueDateToolStripMenuItem.CheckOnClick = true;
             this.sortByDueDateToolStripMenuItem.Name = "sortByDueDateToolStripMenuItem";
             this.sortByDueDateToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.sortByDueDateToolStripMenuItem.Text = "期限順(&O)";
@@ -220,6 +221,7 @@
             // 
             // sortByAddedOrderToolStripMenuItem
             // 
+            this.sortByAddedOrderToolStripMenuItem.CheckOnClick = true;
             this.sortByAddedOrderToolStripMenuItem.Name = "sortByAddedOrderToolStripMenuItem";
             this.sortByAddedOrderToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.sortByAddedOrderToolStripMenuItem.Text = "追加順(&T)";

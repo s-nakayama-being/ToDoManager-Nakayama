@@ -11,6 +11,14 @@ namespace ToDoManager {
         #region フィールド・初期化
         private readonly TodoService FService = new TodoService();
 
+        /// <summary>
+        /// ソート種別を定義する列挙型
+        /// </summary>
+        private enum SortTypeEnum {
+            DueDate,
+            AddedOrder
+        }
+
         public MainForm() {
             InitializeComponent();
 
@@ -25,6 +33,11 @@ namespace ToDoManager {
         private void UpdateList() {
             FLstItems.Items.Clear();
             foreach (var wItem in FService.GetItems()) FLstItems.Items.Add(wItem);
+        }
+
+        private void UpdateSortMenuState(SortTypeEnum vSortType) {
+            sortByDueDateToolStripMenuItem.Checked = (vSortType == SortTypeEnum.DueDate);
+            sortByAddedOrderToolStripMenuItem.Checked = (vSortType == SortTypeEnum.AddedOrder);
         }
         #endregion
 
@@ -69,10 +82,12 @@ namespace ToDoManager {
         private void SortByDueDateToolStripMenuItem_Click(object sender, EventArgs e) {
             FService.SortByDueDate();
             UpdateList();
+            UpdateSortMenuState(SortTypeEnum.DueDate);
         }
         private void SortByAddedOrderToolStripMenuItem_Click(object sender, EventArgs e) {
             FService.SortByAddedOrder();
             UpdateList();
+            UpdateSortMenuState(SortTypeEnum.AddedOrder);
         }
         private void FBtnXmlLoad_Click(object sender, EventArgs e) {
             if (FService.Import()) {
