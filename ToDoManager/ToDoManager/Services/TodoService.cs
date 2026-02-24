@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
@@ -136,7 +137,9 @@ namespace ToDoManager.Services {
         public IEnumerable<TodoItem> SearchByTitle(string vKeyword) {
             if (string.IsNullOrEmpty(vKeyword)) return FItems;
 
-            return FItems.Where(x => x.Title.IndexOf(vKeyword, StringComparison.OrdinalIgnoreCase) >= 0);
+            var wCompareInfo = CultureInfo.CurrentCulture.CompareInfo;
+
+            return FItems.Where(x => wCompareInfo.IndexOf(x.Title, vKeyword, CompareOptions.IgnoreCase | CompareOptions.IgnoreWidth) >= 0);
         }
         #endregion
     }
