@@ -11,7 +11,6 @@ namespace ToDoManager {
     public partial class MainForm : Form {
         #region フィールド・初期化
         private readonly TodoService FService = new TodoService();
-              
         public MainForm() {
             InitializeComponent();
 
@@ -83,10 +82,9 @@ namespace ToDoManager {
             FTxtTitle.BackColor = SystemColors.Control;
             FTxtContent.Text = vItem.Content;
             FDtpDueDate.Text = vItem.DueDate.ToString("yyyy/M/d");
+            FChkDone.Checked = vItem.IsCompleted;
 
-            if (FChkDone is CheckBox wChk) wChk.Checked = vItem.IsCompleted;
-
-            if (!vItem.IsCompleted && vItem.DueDate<DateTime.Today) FTxtTitle.BackColor = Color.Yellow;
+            if (!vItem.IsCompleted && vItem.DueDate < DateTime.Today) FTxtTitle.BackColor = Color.Yellow;
         }
 
         /// <summary>
