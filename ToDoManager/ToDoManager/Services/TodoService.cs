@@ -96,16 +96,12 @@ namespace ToDoManager.Services {
         /// <summary>
         /// 期限順にソート
         /// </summary>
-        public void SortByDueDate() {
-            FItems = FItems.OrderBy(x => x.DueDate).ToList();
-        }
+        public void SortByDueDate() => FItems = FItems.OrderBy(x => x.DueDate).ToList();
 
         /// <summary>
         /// 追加順にソート
         /// </summary>
-        public void SortByAddedOrder() {
-            FItems = FItems.OrderBy(x => x.Id).ToList();
-        }
+        public void SortByAddedOrder() => FItems = FItems.OrderBy(x => x.Id).ToList();
         #endregion
     }
 }
