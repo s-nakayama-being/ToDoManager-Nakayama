@@ -69,11 +69,15 @@ namespace ToDoManager {
         private void SortByDueDateToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByDueDate();
         private void SortByAddedOrderToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByAddedOrder();
         private void FBtnXmlLoad_Click(object sender, EventArgs e) {
-            if (FService.Import()) {
-                UpdateList();
-                MessageBox.Show(this, "データを読み込みました。", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            } else {
-                MessageBox.Show(this, "指定ファイルが存在しません", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            try {
+                if (FService.Import()) {
+                    UpdateList();
+                    MessageBox.Show(this, "データを読み込みました。", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                } else {
+                    MessageBox.Show(this, "指定ファイルが存在しません", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            } catch (Exception wEx) {
+                MessageBox.Show(this, $"データの読み込みに失敗しました：{wEx.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         #endregion
