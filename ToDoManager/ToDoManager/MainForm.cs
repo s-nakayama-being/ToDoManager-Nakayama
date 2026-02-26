@@ -38,8 +38,6 @@ namespace ToDoManager {
                     try {
                         FService.AddOrUpdate(wForm.Item);
                         UpdateList();
-                    } catch (ArgumentException wEx) {
-                        MessageBox.Show(this, wEx.Message, "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     } catch (Exception wEx) {
                         MessageBox.Show(this, $"保存に失敗しました：{wEx.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
@@ -54,8 +52,12 @@ namespace ToDoManager {
             if (FLstItems.SelectedItem is TodoItem wSelected) {
                 using (var wForm = new TodoEditForm(wSelected)) {
                     if (wForm.ShowDialog() == DialogResult.OK) {
-                        FService.AddOrUpdate(wForm.Item);
-                        UpdateList();
+                        try {
+                            FService.AddOrUpdate(wForm.Item);
+                            UpdateList();
+                        } catch (Exception wEx) {
+                            MessageBox.Show(this, $"保存に失敗しました：{wEx.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
                 }
             }
