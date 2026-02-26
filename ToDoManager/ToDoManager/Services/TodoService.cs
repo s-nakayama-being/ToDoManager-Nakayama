@@ -29,7 +29,7 @@ namespace ToDoManager.Services {
         /// </summary>
         /// <returns>登録されているToDoアイテムの読み取り専用リスト</returns>
         public IReadOnlyList<TodoItem> GetItems() {
-            return FItems;
+            return FItems.AsReadOnly();
         }
 
         /// <summary>
