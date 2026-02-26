@@ -12,16 +12,30 @@ namespace ToDoManagerTests {
     public class TodoServiceTests {
         #region 基本機能テスト
         /// <summary>
+        /// テスト対象のTodoServiceインスタンスを保持するフィールド
+        /// </summary>
+        private TodoService FService;
+
+        /// <summary>
+        /// テスト前の初期化処理
+        /// </summary>
+        [SetUp]
+        public void Init() {
+            FService = new TodoService();
+        }
+
+        /// <summary>
         /// AddOrUpdateで新規アイテムが追加されること
         /// </summary>
         [Test]
         public void AddOrUpdate_ToDoの追加() {
-            var wService = new TodoService();
             var wItem = new TodoItem { Title = "Test", Content = "TestContent", DueDate = DateTime.Today, IsCompleted = false };
-            wService.AddOrUpdate(wItem);
-            var wItems = wService.GetItems().ToList();
-            Assert.AreEqual(1, wItems.Count);
-            Assert.AreEqual("Test", wItems[0].Title);
+
+            FService.AddOrUpdate(wItem);
+
+            var wItems = FService.GetItems().ToList();
+            Assert.That(wItems.Count, Is.EqualTo(1), "アイテム数が1であること");
+            Assert.That(wItems[0].Title, Is.EqualTo("Test"), "タイトルが一致すること");
         }
 
         /// <summary>
@@ -29,14 +43,15 @@ namespace ToDoManagerTests {
         /// </summary>
         [Test]
         public void AddOrUpdate_ToDoの更新() {
-            var wService = new TodoService();
             var wItem = new TodoItem { Title = "Test", Content = "TestContent", DueDate = DateTime.Today, IsCompleted = false };
-            wService.AddOrUpdate(wItem);
+            FService.AddOrUpdate(wItem);
+
             wItem.Title = "Updated";
-            wService.AddOrUpdate(wItem);
-            var wItems = wService.GetItems().ToList();
-            Assert.AreEqual(1, wItems.Count);
-            Assert.AreEqual("Updated", wItems[0].Title);
+            FService.AddOrUpdate(wItem);
+
+            var wItems = FService.GetItems().ToList();
+            Assert.That(wItems.Count, Is.EqualTo(1), "更新のためアイテム数は増えないこと");
+            Assert.That(wItems[0].Title, Is.EqualTo("Updated"), "タイトルが更新されていること");
         }
         #endregion
 
@@ -46,17 +61,16 @@ namespace ToDoManagerTests {
         /// </summary>
         [Test]
         public void SortByDueDate_期限順ソート() {
-            var wService = new TodoService();
             var wItem1 = new TodoItem { Title = "Test1", DueDate = DateTime.Today.AddDays(1) };
             var wItem2 = new TodoItem { Title = "Test2", DueDate = DateTime.Today };
-            wService.AddOrUpdate(wItem1);
-            wService.AddOrUpdate(wItem2);
+            FService.AddOrUpdate(wItem1);
+            FService.AddOrUpdate(wItem2);
 
-            wService.SortByDueDate();
-            var wItems = wService.GetItems().ToList();
+            FService.SortByDueDate();
 
-            Assert.AreEqual("Test2", wItems[0].Title);
-            Assert.AreEqual("Test1", wItems[1].Title);
+            var wItems = FService.GetItems().ToList();
+            Assert.That(wItems[0].Title, Is.EqualTo("Test2"), "期限が早いものが先頭に来ること");
+            Assert.That(wItems[1].Title, Is.EqualTo("Test1"), "期限が遅いものが後ろに来ること");
         }
 
         /// <summary>
@@ -64,17 +78,16 @@ namespace ToDoManagerTests {
         /// </summary>
         [Test]
         public void SortByAddedOrder_追加順ソート() {
-            var wService = new TodoService();
             var wItem1 = new TodoItem { Title = "Test1", DueDate = DateTime.Today.AddDays(1) };
             var wItem2 = new TodoItem { Title = "Test2", DueDate = DateTime.Today };
-            wService.AddOrUpdate(wItem1);
-            wService.AddOrUpdate(wItem2);
+            FService.AddOrUpdate(wItem1);
+            FService.AddOrUpdate(wItem2);
 
-            wService.SortByAddedOrder();
-            var wItems = wService.GetItems().ToList();
+            FService.SortByAddedOrder();
 
-            Assert.AreEqual("Test1", wItems[0].Title);
-            Assert.AreEqual("Test2", wItems[1].Title);
+            var wItems = FService.GetItems().ToList();
+            Assert.That(wItems[0].Title, Is.EqualTo("Test1"), "追加順（ID順）に並んでいること");
+            Assert.That(wItems[1].Title, Is.EqualTo("Test2"));
         }
         #endregion
 

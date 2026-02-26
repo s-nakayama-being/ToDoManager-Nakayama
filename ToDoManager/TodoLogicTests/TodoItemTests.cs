@@ -1,28 +1,25 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using ToDoManager.Models;
 
 namespace ToDoManagerTests {
     /// <summary>
     /// TodoItemの単体テストクラス
     /// </summary>
-    [TestClass]
+    [TestFixture]
     public class TodoItemTests {
         /// <summary>
-        /// ToStringが期待通りのフォーマットを返すこと
+        /// ToStringが完了状態に応じたフォーマットを返すこと
         /// </summary>
-        [TestMethod]
-        public void ToString_IsCompletedがtrueのとき_完了付きフォーマットになる() {
-            var wItem = new TodoItem { Title = "Test", IsCompleted = true };
-            Assert.AreEqual("[完了] Test", wItem.ToString());
-        }
+        /// <param name="vIsCompleted">完了フラグ</param>
+        /// <param name="vExpected">期待される文字列</param>
+        [TestCase(true, "[完了] Test")]
+        [TestCase(false, "[未] Test")]
+        public void ToString_フォーマットの確認(bool vIsCompleted, string vExpected) {
+            var wItem = new TodoItem { Title = "Test", IsCompleted = vIsCompleted };
 
-        /// <summary>
-        /// ToStringが期待通りのフォーマットを返すこと
-        /// </summary>
-        [TestMethod]
-        public void ToString_IsCompletedがfalseのとき_未付きフォーマットになる() {
-            var wItem = new TodoItem { Title = "Test", IsCompleted = false };
-            Assert.AreEqual("[未] Test", wItem.ToString());
+            var wResult = wItem.ToString();
+
+            Assert.That(wResult, Is.EqualTo(vExpected));
         }
     }
 }
