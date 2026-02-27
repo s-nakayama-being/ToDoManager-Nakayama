@@ -23,7 +23,6 @@ namespace ToDoManager.Services {
         }
 
         #region publicメソッド
-
         /// <summary>
         /// ToDoアイテムの一覧を取得する
         /// </summary>
@@ -94,14 +93,11 @@ namespace ToDoManager.Services {
         }
 
         /// <summary>
-        /// 期限順にソート
+        /// 任意のキーでソート
         /// </summary>
-        public void SortByDueDate() => FItems = FItems.OrderBy(x => x.DueDate).ToList();
-
-        /// <summary>
-        /// 追加順にソート
-        /// </summary>
-        public void SortByAddedOrder() => FItems = FItems.OrderBy(x => x.Id).ToList();
+        /// <typeparam name="TKey">ソートのキーの型</typeparam>
+        /// <param name="vKeySelector">キーを選択するメソッド</param>
+        public void SortItems<TKey>(Func<TodoItem, TKey> vKeySelector) => FItems = FItems.OrderBy(vKeySelector).ToList();
         #endregion
     }
 }
