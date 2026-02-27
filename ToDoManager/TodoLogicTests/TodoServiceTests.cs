@@ -141,7 +141,7 @@ namespace ToDoManagerTests {
         public void Import_ファイルのデータ形式が不正な場合_InvalidDataExceptionが発生する(string vFileContent) {
             File.WriteAllText("todos.xml", vFileContent);
 
-            Assert.That(() => FService.Import(), Throws.TypeOf<InvalidOperationException>(), "ファイルのデータ形式が不正な場合はInvalidDataExceptionが発生すること");
+            Assert.That(() => FService.Import(), Throws.TypeOf<InvalidDataException>(), "ファイルのデータ形式が不正な場合はInvalidDataExceptionが発生すること");
         }
     }
 }

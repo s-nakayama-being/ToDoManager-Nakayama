@@ -88,12 +88,12 @@ namespace ToDoManager.Services {
 
             var wSerializer = new XmlSerializer(typeof(List<TodoItem>));
 
-            using (var wStreamReader = new StreamReader(C_FilePath)) {
-                if (wSerializer.Deserialize(wStreamReader) is List<TodoItem> wLoadedItems) {
-                    FItems = wLoadedItems;
-                } else {
-                    throw new InvalidOperationException("ファイルのデータ形式が不正です。");
+            try {
+                using (var wStreamReader = new StreamReader(C_FilePath)) {
+                    FItems = (List<TodoItem>)wSerializer.Deserialize(wStreamReader);
                 }
+            } catch (InvalidOperationException wEx) {
+                throw new InvalidDataException("ファイルのデータ形式が不正です。", wEx);
             }
 
             FNextId = FItems.Any() ? FItems.Max(x => x.Id) + 1 : 1;
