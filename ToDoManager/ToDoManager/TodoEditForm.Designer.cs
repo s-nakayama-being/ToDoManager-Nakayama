@@ -123,6 +123,7 @@
             this.Controls.Add(this.FBtnSave);
             this.MinimumSize = new System.Drawing.Size(267, 314);
             this.Name = "TodoEditForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ToDo編集";
             this.ResumeLayout(false);
             this.PerformLayout();
