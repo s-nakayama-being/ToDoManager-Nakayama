@@ -135,7 +135,7 @@ namespace ToDoManager.Services {
         /// </summary>
         /// <param name="vKeyword">検索キーワード</param>
         public IEnumerable<TodoItem> SearchByTitle(string vKeyword) {
-            if (string.IsNullOrEmpty(vKeyword)) return FItems;
+            if (string.IsNullOrWhiteSpace(vKeyword)) return FItems;
 
             var wCompareInfo = CultureInfo.CurrentCulture.CompareInfo;
 
