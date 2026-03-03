@@ -38,8 +38,6 @@ namespace ToDoManager {
                     try {
                         FService.AddOrUpdate(wForm.Item);
                         UpdateList();
-                    } catch (ArgumentException wEx) {
-                        MessageBox.Show(this, wEx.Message, "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     } catch (Exception wEx) {
                         MessageBox.Show(this, $"保存に失敗しました：{wEx.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
@@ -54,17 +52,39 @@ namespace ToDoManager {
             if (FLstItems.SelectedItem is TodoItem wSelected) {
                 using (var wForm = new TodoEditForm(wSelected)) {
                     if (wForm.ShowDialog() == DialogResult.OK) {
-                        FService.AddOrUpdate(wForm.Item);
-                        UpdateList();
+                        try {
+                            FService.AddOrUpdate(wForm.Item);
+                            UpdateList();
+                        } catch (Exception wEx) {
+                            MessageBox.Show(this, $"保存に失敗しました：{wEx.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
                 }
             }
+        }
+
+        private void DeleteItem() {
+            if (!(FLstItems.SelectedItem is TodoItem wSelectedItem)) {
+                MessageBox.Show("削除する項目を選択してください。", "確認", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var wResult = MessageBox.Show($"「{wSelectedItem.Title}」を削除してもよろしいですか？", "削除確認", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+
+            if (wResult != DialogResult.OK) return;
+
+            FService.Delete(wSelectedItem.Id);
+
+            UpdateList();
+
+            FService.Export();
         }
         #endregion
 
         #region イベントハンドラ
         private void FBtnAdd_Click(object sender, EventArgs e) => AddItem();
         private void FBtnEdit_Click(object sender, EventArgs e) => EditItem();
+        private void FBtnDelete_Click(object sender, EventArgs e) => DeleteItem();
         private void FBtnXml_Click(object sender, EventArgs e) => FService.Export();
         private void SortByDueDateToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByDueDate();
         private void SortByAddedOrderToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByAddedOrder();
@@ -76,6 +96,8 @@ namespace ToDoManager {
                 MessageBox.Show(this, "指定ファイルが存在しません", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        private void 削除DToolStripMenuItem_Click(object sender, EventArgs e) => DeleteItem();
+        private void 編集EToolStripMenuItem_Click(object sender, EventArgs e) => EditItem();
         #endregion
     }
 }
