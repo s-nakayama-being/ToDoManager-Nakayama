@@ -109,15 +109,40 @@ namespace ToDoManager {
         private void FBtnAdd_Click(object sender, EventArgs e) => AddItem();
         private void FBtnEdit_Click(object sender, EventArgs e) => EditItem();
         private void FBtnDelete_Click(object sender, EventArgs e) => DeleteItem();
-        private void FBtnXml_Click(object sender, EventArgs e) => FService.Export();
+        private void FBtnSave_Click(object sender, EventArgs e) {
+            using (var wDialog = new SaveFileDialog()) {
+                wDialog.Title = "ToDoデータの保存";
+                wDialog.Filter = $"JSONファイル (*{TodoService.C_ExtJson})|*{TodoService.C_ExtJson}|XNLファイル (*{TodoService.C_ExtXml})|*{TodoService.C_ExtXml}";
+                wDialog.FilterIndex = 1;
+                wDialog.OverwritePrompt = true;
+
+                if (wDialog.ShowDialog() == DialogResult.OK) {
+                    try {
+                        FService.Export(wDialog.FileName);
+                        MessageBox.Show(this, "データを保存しました", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    } catch (Exception wEx) {
+                        MessageBox.Show(this, $"データの保存に失敗しました：{wEx.Message}", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
         private void SortByDueDateToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByDueDate();
         private void SortByAddedOrderToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByAddedOrder();
         private void FBtnLoad_Click(object sender, EventArgs e) {
-            if (FService.Import()) {
-                RefreshList();
-                MessageBox.Show(this, "データを読み込みました。", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            } else {
-                MessageBox.Show(this, "指定ファイルが存在しません", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            using (var wDialog = new OpenFileDialog()) {
+                wDialog.Title = "ToDoデータの読込";
+                wDialog.Filter = $"JSONファイル (*{TodoService.C_ExtJson})|*{TodoService.C_ExtJson}|XNLファイル (*{TodoService.C_ExtXml})|*{TodoService.C_ExtXml}";
+                wDialog.FilterIndex = 1;
+
+                if (wDialog.ShowDialog() == DialogResult.OK) {
+                    try {
+                        FService.Import(wDialog.FileName);
+                        RefreshList();
+                        MessageBox.Show(this, "データを読み込みました", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    } catch (Exception wEx) {
+                        MessageBox.Show(this, $"データの読み込みに失敗しました：{wEx.Message}", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
             }
         }
         private void FBtnSearch_Click(object sender, EventArgs e) => RefreshList();

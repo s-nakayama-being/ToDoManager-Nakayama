@@ -195,7 +195,7 @@
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.saveToolStripMenuItem.Text = "保存(&S)";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.FBtnXml_Click);
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.FBtnSave_Click);
             // 
             // editToolStripMenuItem
             // 

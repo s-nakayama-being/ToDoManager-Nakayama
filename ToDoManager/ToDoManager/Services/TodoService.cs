@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Xml.Serialization;
 using ToDoManager.Models;
 
 namespace ToDoManager.Services {
@@ -15,7 +14,9 @@ namespace ToDoManager.Services {
 
         private List<TodoItem> FItems = new List<TodoItem>();
         private int FNextId = 1;
-        private static readonly string C_FilePath = "todos.xml";
+        public const string C_ExtJson = ".json";
+        public const string C_ExtXml = ".xml";
+        private readonly Dictionary<string, Func<ITodoStorage>> FStorageFactories;
 
         #endregion
 
@@ -23,6 +24,12 @@ namespace ToDoManager.Services {
         /// コンストラクタ
         /// </summary>
         public TodoService() {
+            FStorageFactories = new Dictionary<string, Func<ITodoStorage>>(StringComparer.OrdinalIgnoreCase) {
+                { C_ExtJson, () => new JsonTodoStorage() },
+                { C_ExtXml, () => new XmlTodoStorage() }
+            };
+
+            FItems = new List<TodoItem>();
         }
 
         #region publicメソッド
@@ -96,27 +103,36 @@ namespace ToDoManager.Services {
             wExisting.IsCompleted = vItem.IsCompleted;
         }
 
-        /// <summary>
-        /// XMLで保存
-        /// </summary>
-        public void Export() {
-            var wSerializer = new XmlSerializer(typeof(List<TodoItem>));
-            using (var wWriter = new StreamWriter(C_FilePath)) wSerializer.Serialize(wWriter, FItems);
+        private ITodoStorage GetStorage(string vFilePath) {
+            string wExtension = Path.GetExtension(vFilePath);
+
+            if (wExtension != null && FStorageFactories.TryGetValue(wExtension, out var wFactory)) wFactory();
+
+            throw new NotSupportedException("サポートされていないファイル形式です");
         }
 
         /// <summary>
-        /// XMLで読込
+        /// ToDoアイテムを任意のファイルで保存
         /// </summary>
-        public bool Import() {
-            if (!File.Exists(C_FilePath)) return false;
+        public void Export(string vFilePath) {
+            if (string.IsNullOrWhiteSpace(vFilePath)) throw new ArgumentException("ファイルパスが指定されていません。");
 
-            var wSerializer = new XmlSerializer(typeof(List<TodoItem>));
-            var wStreamReader = new StreamReader(C_FilePath);
-            FItems = (List<TodoItem>)wSerializer.Deserialize(wStreamReader);
+            ITodoStorage wStorage = GetStorage(vFilePath);
+            wStorage.Save(vFilePath, FItems);
+        }
 
+        /// <summary>
+        /// 任意のファイルからToDoアイテムを読込
+        /// </summary>
+        public void Import(string vFilePath) {
+            if (string.IsNullOrWhiteSpace(vFilePath)) throw new ArgumentException("ファイルパスが指定されていません。");
+            if (!File.Exists(vFilePath)) throw new FileNotFoundException("指定されたファイルが存在しません。");
+
+            ITodoStorage wStorage = GetStorage(vFilePath);
+            var wLoadedItems = wStorage.Load(vFilePath);
+
+            FItems = wLoadedItems.ToList();
             FNextId = FItems.Any() ? FItems.Max(x => x.Id) + 1 : 1;
-
-            return true;
         }
 
         /// <summary>
