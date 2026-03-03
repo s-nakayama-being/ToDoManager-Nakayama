@@ -8,13 +8,16 @@ namespace ToDoManager {
     /// </summary>
     public partial class TodoEditForm : Form {
         #region フィールド・プロパティ
+
         /// <summary>
         /// 編集対象のToDoアイテムを取得
         /// </summary>
         public TodoItem Item { get; private set; }
+
         #endregion
 
         #region 初期化
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -27,9 +30,11 @@ namespace ToDoManager {
             FDtpDueDate.Value = vItem.DueDate == default(DateTime) ? DateTime.Now : vItem.DueDate;
             FChkDone.Checked = vItem.IsCompleted;
         }
+
         #endregion
 
         #region privateメソッド
+
         /// <summary>
         /// 入力内容をItemに反映しバリデーションする
         /// </summary>
@@ -42,13 +47,16 @@ namespace ToDoManager {
             DialogResult = DialogResult.OK;
             Close();
         }
+
         #endregion
 
         #region イベントハンドラ
+
         /// <summary>
         /// 保存ボタンがクリックされたときの処理
         /// </summary>
         private void FBtnSave_Click(object sender, EventArgs e) => SaveItem();
+
         #endregion
     }
 }

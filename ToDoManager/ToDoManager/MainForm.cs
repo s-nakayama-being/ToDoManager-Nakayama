@@ -11,16 +11,19 @@ namespace ToDoManager {
     /// </summary>
     public partial class MainForm : Form {
         #region フィールド・初期化
+
         private readonly TodoService FService = new TodoService();
 
         public MainForm() {
             InitializeComponent();
 
-            RefrechList();
+            RefreshList();
         }
+
         #endregion
 
         #region UI操作
+
         /// <summary>
         /// ToDoリストを更新
         /// </summary>
@@ -33,16 +36,18 @@ namespace ToDoManager {
         /// <summary>
         /// 指定された条件を適用して画面を再描画
         /// </summary>
-        private void RefrechList() {
+        private void RefreshList() {
             var wSearchedItems = FService.SearchByTitle(FTxtSearch.Text);
 
             // 今後、#602534で実装されたソート機能をこの行に追加することを想定
 
             UpdateList(wSearchedItems);
         }
+
         #endregion
 
         #region ToDo操作
+
         /// <summary>
         /// 追加アイテムを処理
         /// </summary>
@@ -51,7 +56,7 @@ namespace ToDoManager {
                 if (wForm.ShowDialog() == DialogResult.OK) {
                     try {
                         FService.AddOrUpdate(wForm.Item);
-                        RefrechList();
+                        RefreshList();
                     } catch (ArgumentException wEx) {
                         MessageBox.Show(this, wEx.Message, "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     } catch (Exception wEx) {
@@ -69,7 +74,7 @@ namespace ToDoManager {
                 using (var wForm = new TodoEditForm(wSelected)) {
                     if (wForm.ShowDialog() == DialogResult.OK) {
                         FService.AddOrUpdate(wForm.Item);
-                        RefrechList();
+                        RefreshList();
                     }
                 }
             }
@@ -90,13 +95,15 @@ namespace ToDoManager {
 
             FService.Delete(wSelectedItem.Id);
 
-            RefrechList();
+            RefreshList();
 
             FService.Export();
         }
+
         #endregion
 
         #region イベントハンドラ
+
         private void FBtnAdd_Click(object sender, EventArgs e) => AddItem();
         private void FBtnEdit_Click(object sender, EventArgs e) => EditItem();
         private void FBtnDelete_Click(object sender, EventArgs e) => DeleteItem();
@@ -105,22 +112,22 @@ namespace ToDoManager {
         private void SortByAddedOrderToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByAddedOrder();
         private void FBtnXmlLoad_Click(object sender, EventArgs e) {
             if (FService.Import()) {
-                RefrechList();
+                RefreshList();
                 MessageBox.Show(this, "データを読み込みました。", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
             } else {
                 MessageBox.Show(this, "指定ファイルが存在しません", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        private void FBtnSearch_Click(object sender, EventArgs e) => RefrechList();
+        private void FBtnSearch_Click(object sender, EventArgs e) => RefreshList();
         private void FTxtSearch_KeyDown(object sender, KeyEventArgs e) {
             if (e.KeyCode == Keys.Enter) {
                 e.SuppressKeyPress = true;
-                RefrechList();
+                RefreshList();
             }
         }
         private void FBtnClear_Click(object sender, EventArgs e) {
             FTxtSearch.Clear();
-            RefrechList();
+            RefreshList();
         }
 
         #endregion

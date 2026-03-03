@@ -12,9 +12,11 @@ namespace ToDoManager.Services {
     /// </summary>
     public class TodoService {
         #region フィールド
+
         private List<TodoItem> FItems = new List<TodoItem>();
         private int FNextId = 1;
         private static readonly string C_FilePath = "todos.xml";
+
         #endregion
 
         /// <summary>
@@ -141,6 +143,7 @@ namespace ToDoManager.Services {
 
             return FItems.Where(x => wCompareInfo.IndexOf(x.Title, vKeyword, CompareOptions.IgnoreCase | CompareOptions.IgnoreWidth) >= 0);
         }
+
         #endregion
     }
 }
