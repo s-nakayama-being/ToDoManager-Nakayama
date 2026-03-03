@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
@@ -11,9 +12,11 @@ namespace ToDoManager.Services {
     /// </summary>
     public class TodoService {
         #region フィールド
+
         private List<TodoItem> FItems = new List<TodoItem>();
         private int FNextId = 1;
         private static readonly string C_FilePath = "todos.xml";
+
         #endregion
 
         /// <summary>
@@ -141,6 +144,19 @@ namespace ToDoManager.Services {
                 }
             }
         }
+
+        /// <summary>
+        /// タイトルの部分一致で検索
+        /// </summary>
+        /// <param name="vKeyword">検索キーワード</param>
+        public IEnumerable<TodoItem> SearchByTitle(string vKeyword) {
+            if (string.IsNullOrWhiteSpace(vKeyword)) return FItems;
+
+            var wCompareInfo = CultureInfo.CurrentCulture.CompareInfo;
+
+            return FItems.Where(x => wCompareInfo.IndexOf(x.Title, vKeyword, CompareOptions.IgnoreCase | CompareOptions.IgnoreWidth) >= 0);
+        }
+
         #endregion
     }
 }
