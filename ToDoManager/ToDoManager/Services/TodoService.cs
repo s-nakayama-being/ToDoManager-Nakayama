@@ -31,9 +31,7 @@ namespace ToDoManager.Services {
         /// ToDoアイテムの一覧を取得する
         /// </summary>
         /// <returns>登録されているToDoアイテムの読み取り専用リスト</returns>
-        public IReadOnlyList<TodoItem> GetItems() {
-            return FItems;
-        }
+        public IReadOnlyList<TodoItem> GetItems() => FItems;
 
         /// <summary>
         /// ToDoアイテムの入力値を検証する
@@ -94,6 +92,7 @@ namespace ToDoManager.Services {
             wExisting.Content = vItem.Content;
             wExisting.DueDate = vItem.DueDate;
             wExisting.IsCompleted = vItem.IsCompleted;
+            wExisting.Priority = vItem.Priority;
         }
 
         /// <summary>

@@ -22,6 +22,8 @@
         private System.Windows.Forms.Button FBtnLoad;
         private System.Windows.Forms.Label FTitleLabel;
         private System.Windows.Forms.Label FContentLabel;
+        private System.Windows.Forms.Label FPriorityLabel;
+        private System.Windows.Forms.ComboBox FCmbPriority;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
@@ -80,6 +82,8 @@
             this.FTxtSearch = new System.Windows.Forms.TextBox();
             this.FBtnSearch = new System.Windows.Forms.Button();
             this.FBtnClear = new System.Windows.Forms.Button();
+            this.FPriorityLabel = new System.Windows.Forms.Label();
+            this.FCmbPriority = new System.Windows.Forms.ComboBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -312,11 +316,36 @@
             this.FBtnClear.UseVisualStyleBackColor = true;
             this.FBtnClear.Click += new System.EventHandler(this.FBtnClear_Click);
             // 
+            // FPriorityLabel
+            // 
+            this.FPriorityLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.FPriorityLabel.AutoSize = true;
+            this.FPriorityLabel.Location = new System.Drawing.Point(442, 312);
+            this.FPriorityLabel.Name = "FPriorityLabel";
+            this.FPriorityLabel.Size = new System.Drawing.Size(41, 12);
+            this.FPriorityLabel.TabIndex = 18;
+            this.FPriorityLabel.Text = "優先度";
+            // 
+            // FCmbPriority
+            // 
+            this.FCmbPriority.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.FCmbPriority.FormattingEnabled = true;
+            this.FCmbPriority.Items.AddRange(new object[] {
+            "高",
+            "中",
+            "低"});
+            this.FCmbPriority.Location = new System.Drawing.Point(444, 327);
+            this.FCmbPriority.Name = "FCmbPriority";
+            this.FCmbPriority.Size = new System.Drawing.Size(200, 20);
+            this.FCmbPriority.TabIndex = 19;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(690, 538);
+            this.Controls.Add(this.FCmbPriority);
+            this.Controls.Add(this.FPriorityLabel);
             this.Controls.Add(this.FBtnClear);
             this.Controls.Add(this.FBtnSearch);
             this.Controls.Add(this.FTxtSearch);

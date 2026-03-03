@@ -30,13 +30,17 @@ namespace ToDoManagerTests {
         /// </summary>
         [Test]
         public void AddOrUpdate_ToDoの追加() {
-            var wItem = new TodoItem { Title = "Test", Content = "TestContent", DueDate = DateTime.Today, IsCompleted = false };
+            var wItem = new TodoItem { Title = "Test", Content = "TestContent", DueDate = DateTime.Today, IsCompleted = false, Priority = TodoPriorityEnum.High };
 
             FService.AddOrUpdate(wItem);
 
             var wItems = FService.GetItems().ToList();
             Assert.That(wItems.Count, Is.EqualTo(1), "アイテム数が1であること");
             Assert.That(wItems[0].Title, Is.EqualTo("Test"), "タイトルが一致すること");
+            Assert.That(wItems[0].Content, Is.EqualTo("TestContent"), "内容が一致すること");
+            Assert.That(wItems[0].DueDate, Is.EqualTo(DateTime.Today), "期限が一致すること");
+            Assert.That(wItems[0].IsCompleted, Is.False, "完了状態が一致すること");
+            Assert.That(wItems[0].Priority, Is.EqualTo(TodoPriorityEnum.High), "優先度が一致すること");
         }
 
         /// <summary>
@@ -44,15 +48,23 @@ namespace ToDoManagerTests {
         /// </summary>
         [Test]
         public void AddOrUpdate_ToDoの更新() {
-            var wItem = new TodoItem { Title = "Test", Content = "TestContent", DueDate = DateTime.Today, IsCompleted = false };
+            var wItem = new TodoItem { Title = "Test", Content = "TestContent", DueDate = DateTime.Today, IsCompleted = false, Priority = TodoPriorityEnum.High };
             FService.AddOrUpdate(wItem);
 
             wItem.Title = "Updated";
+            wItem.Content = "UpdatedContent";
+            wItem.DueDate = DateTime.Today.AddDays(1);
+            wItem.IsCompleted = true;
+            wItem.Priority = TodoPriorityEnum.Low;
             FService.AddOrUpdate(wItem);
 
             var wItems = FService.GetItems().ToList();
             Assert.That(wItems.Count, Is.EqualTo(1), "更新のためアイテム数は増えないこと");
             Assert.That(wItems[0].Title, Is.EqualTo("Updated"), "タイトルが更新されていること");
+            Assert.That(wItems[0].Content, Is.EqualTo("UpdatedContent"), "内容が更新されていること");
+            Assert.That(wItems[0].DueDate, Is.EqualTo(DateTime.Today.AddDays(1)), "期限が更新されていること");
+            Assert.That(wItems[0].IsCompleted, Is.True, "完了状態が更新されていること");
+            Assert.That(wItems[0].Priority, Is.EqualTo(TodoPriorityEnum.Low), "優先度が更新されていること");
         }
 
         #endregion
