@@ -111,7 +111,6 @@ namespace ToDoManager.Services {
             var wStreamReader = new StreamReader(C_FilePath);
             FItems = (List<TodoItem>)wSerializer.Deserialize(wStreamReader);
 
-
             FNextId = FItems.Any() ? FItems.Max(x => x.Id) + 1 : 1;
 
             return true;

@@ -88,7 +88,7 @@ namespace ToDoManager {
         private void FBtnXml_Click(object sender, EventArgs e) => FService.Export();
         private void SortByDueDateToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByDueDate();
         private void SortByAddedOrderToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByAddedOrder();
-        private void FBtnXmlLoad_Click(object sender, EventArgs e) {
+        private void FBtnLoad_Click(object sender, EventArgs e) {
             if (FService.Import()) {
                 UpdateList();
                 MessageBox.Show(this, "データを読み込みました。", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -96,7 +96,6 @@ namespace ToDoManager {
                 MessageBox.Show(this, "指定ファイルが存在しません", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void 削除DToolStripMenuItem_Click(object sender, EventArgs e) => DeleteItem();
         private void 編集EToolStripMenuItem_Click(object sender, EventArgs e) => EditItem();
         #endregion
