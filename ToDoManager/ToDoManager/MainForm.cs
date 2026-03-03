@@ -73,8 +73,12 @@ namespace ToDoManager {
             if (FLstItems.SelectedItem is TodoItem wSelected) {
                 using (var wForm = new TodoEditForm(wSelected)) {
                     if (wForm.ShowDialog() == DialogResult.OK) {
-                        FService.AddOrUpdate(wForm.Item);
-                        RefreshList();
+                        try {
+                            FService.AddOrUpdate(wForm.Item);
+                            RefreshList();
+                        } catch (Exception wEx) {
+                            MessageBox.Show(this, $"保存に失敗しました：{wEx.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
                 }
             }
@@ -96,8 +100,6 @@ namespace ToDoManager {
             FService.Delete(wSelectedItem.Id);
 
             RefreshList();
-
-            FService.Export();
         }
 
         #endregion
@@ -110,7 +112,7 @@ namespace ToDoManager {
         private void FBtnXml_Click(object sender, EventArgs e) => FService.Export();
         private void SortByDueDateToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByDueDate();
         private void SortByAddedOrderToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByAddedOrder();
-        private void FBtnXmlLoad_Click(object sender, EventArgs e) {
+        private void FBtnLoad_Click(object sender, EventArgs e) {
             if (FService.Import()) {
                 RefreshList();
                 MessageBox.Show(this, "データを読み込みました。", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
