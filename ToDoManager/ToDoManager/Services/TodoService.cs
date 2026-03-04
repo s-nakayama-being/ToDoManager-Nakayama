@@ -14,21 +14,19 @@ namespace ToDoManager.Services {
 
         private List<TodoItem> FItems = new List<TodoItem>();
         private int FNextId = 1;
+
+        private readonly ITodoStorageFactory FStorageFactory;
+
         public const string C_ExtJson = ".json";
         public const string C_ExtXml = ".xml";
-        private readonly Dictionary<string, Func<ITodoStorage>> FStorageFactories;
 
         #endregion
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public TodoService() {
-            FStorageFactories = new Dictionary<string, Func<ITodoStorage>>(StringComparer.OrdinalIgnoreCase) {
-                { C_ExtJson, () => new JsonTodoStorage() },
-                { C_ExtXml, () => new XmlTodoStorage() }
-            };
-
+        public TodoService(ITodoStorageFactory vStorageFactory) {
+            FStorageFactory = vStorageFactory ?? throw new ArgumentNullException(nameof(vStorageFactory));
             FItems = new List<TodoItem>();
         }
 
@@ -103,21 +101,13 @@ namespace ToDoManager.Services {
             wExisting.IsCompleted = vItem.IsCompleted;
         }
 
-        private ITodoStorage GetStorage(string vFilePath) {
-            string wExtension = Path.GetExtension(vFilePath);
-
-            if (wExtension != null && FStorageFactories.TryGetValue(wExtension, out var wFactory)) wFactory();
-
-            throw new NotSupportedException("サポートされていないファイル形式です");
-        }
-
         /// <summary>
         /// ToDoアイテムを任意のファイルで保存
         /// </summary>
         public void Export(string vFilePath) {
             if (string.IsNullOrWhiteSpace(vFilePath)) throw new ArgumentException("ファイルパスが指定されていません。");
 
-            ITodoStorage wStorage = GetStorage(vFilePath);
+            ITodoStorage wStorage = FStorageFactory.Create(vFilePath);
             wStorage.Save(vFilePath, FItems);
         }
 
@@ -126,9 +116,8 @@ namespace ToDoManager.Services {
         /// </summary>
         public void Import(string vFilePath) {
             if (string.IsNullOrWhiteSpace(vFilePath)) throw new ArgumentException("ファイルパスが指定されていません。");
-            if (!File.Exists(vFilePath)) throw new FileNotFoundException("指定されたファイルが存在しません。");
 
-            ITodoStorage wStorage = GetStorage(vFilePath);
+            ITodoStorage wStorage = FStorageFactory.Create(vFilePath);
             var wLoadedItems = wStorage.Load(vFilePath);
 
             FItems = wLoadedItems.ToList();

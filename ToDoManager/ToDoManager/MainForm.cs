@@ -12,10 +12,17 @@ namespace ToDoManager {
     public partial class MainForm : Form {
         #region フィールド・初期化
 
-        private readonly TodoService FService = new TodoService();
+        private readonly TodoService FService;
 
         public MainForm() {
             InitializeComponent();
+
+            var wStorageFactory = new TodoStorageFactory();
+
+            wStorageFactory.Register(TodoService.C_ExtJson, () => new JsonTodoStorage());
+            wStorageFactory.Register(TodoService.C_ExtXml, () => new XmlTodoStorage());
+
+            FService = new TodoService(wStorageFactory);
 
             RefreshList();
         }
@@ -57,10 +64,10 @@ namespace ToDoManager {
                     try {
                         FService.AddOrUpdate(wForm.Item);
                         RefreshList();
-                    } catch (ArgumentException wEx) {
-                        MessageBox.Show(this, wEx.Message, "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    } catch (Exception wEx) {
-                        MessageBox.Show(this, $"保存に失敗しました：{wEx.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    } catch (ArgumentException ex) {
+                        MessageBox.Show(this, ex.Message, "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    } catch (Exception ex) {
+                        MessageBox.Show(this, $"保存に失敗しました：{ex.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
@@ -76,8 +83,8 @@ namespace ToDoManager {
                         try {
                             FService.AddOrUpdate(wForm.Item);
                             RefreshList();
-                        } catch (Exception wEx) {
-                            MessageBox.Show(this, $"保存に失敗しました：{wEx.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        } catch (Exception ex) {
+                            MessageBox.Show(this, $"保存に失敗しました：{ex.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                 }
@@ -120,14 +127,12 @@ namespace ToDoManager {
                     try {
                         FService.Export(wDialog.FileName);
                         MessageBox.Show(this, "データを保存しました", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    } catch (Exception wEx) {
-                        MessageBox.Show(this, $"データの保存に失敗しました：{wEx.Message}", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    } catch (Exception ex) {
+                        MessageBox.Show(this, $"データの保存に失敗しました：{ex.Message}", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
         }
-        private void SortByDueDateToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByDueDate();
-        private void SortByAddedOrderToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByAddedOrder();
         private void FBtnLoad_Click(object sender, EventArgs e) {
             using (var wDialog = new OpenFileDialog()) {
                 wDialog.Title = "ToDoデータの読込";
@@ -139,12 +144,15 @@ namespace ToDoManager {
                         FService.Import(wDialog.FileName);
                         RefreshList();
                         MessageBox.Show(this, "データを読み込みました", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    } catch (Exception wEx) {
-                        MessageBox.Show(this, $"データの読み込みに失敗しました：{wEx.Message}", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    } catch (Exception ex) {
+                        MessageBox.Show(this, $"データの読み込みに失敗しました：{ex.Message}", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
         }
+        private void SortByDueDateToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByDueDate();
+        private void SortByAddedOrderToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByAddedOrder();
+
         private void FBtnSearch_Click(object sender, EventArgs e) => RefreshList();
         private void FTxtSearch_KeyDown(object sender, KeyEventArgs e) {
             if (e.KeyCode == Keys.Enter) {
