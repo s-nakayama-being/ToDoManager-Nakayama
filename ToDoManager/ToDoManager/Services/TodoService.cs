@@ -92,8 +92,8 @@ namespace ToDoManager.Services {
                 using (var wStreamReader = new StreamReader(C_FilePath)) {
                     FItems = (List<TodoItem>)wSerializer.Deserialize(wStreamReader);
                 }
-            } catch (InvalidOperationException wEx) {
-                throw new InvalidDataException("ファイルのデータ形式が不正です。", wEx);
+            } catch (InvalidOperationException ex) {
+                throw new InvalidDataException("ファイルのデータ形式が不正です。", ex);
             }
 
             FNextId = FItems.Any() ? FItems.Max(x => x.Id) + 1 : 1;

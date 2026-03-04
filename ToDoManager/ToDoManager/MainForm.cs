@@ -38,10 +38,10 @@ namespace ToDoManager {
                     try {
                         FService.AddOrUpdate(wForm.Item);
                         UpdateList();
-                    } catch (ArgumentException wEx) {
-                        MessageBox.Show(this, wEx.Message, "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    } catch (Exception wEx) {
-                        MessageBox.Show(this, $"保存に失敗しました：{wEx.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    } catch (ArgumentException ex) {
+                        MessageBox.Show(this, ex.Message, "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    } catch (Exception ex) {
+                        MessageBox.Show(this, $"保存に失敗しました：{ex.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
@@ -76,8 +76,8 @@ namespace ToDoManager {
                 } else {
                     MessageBox.Show(this, "指定ファイルが存在しません", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-            } catch (Exception wEx) {
-                MessageBox.Show(this, $"データの読み込みに失敗しました：{wEx.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            } catch (Exception ex) {
+                MessageBox.Show(this, $"データの読み込みに失敗しました：{ex.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         #endregion
