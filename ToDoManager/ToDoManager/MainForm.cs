@@ -74,10 +74,10 @@ namespace ToDoManager {
         }
 
         /// <summary>
-        /// 選択されたアイテムの詳細を表示する
+        /// アイテムの詳細を表示
         /// </summary>
         /// <param name="vItem">表示対象のアイテム</param>
-        private void DisplaySelectedItemDetails(TodoItem vItem) {
+        private void DisplayItemDetails(TodoItem vItem) {
             FTxtTitle.Text = vItem.Title;
             FTxtTitle.BackColor = SystemColors.Control;
             FTxtContent.Text = vItem.Content;
@@ -88,15 +88,13 @@ namespace ToDoManager {
         }
 
         /// <summary>
-        /// 詳細表示エリアをクリアする
+        /// 詳細表示エリアをクリア
         /// </summary>
         private void ClearDetailDisplay() {
             FTxtTitle.Text = string.Empty;
             FTxtContent.Text = string.Empty;
             FDtpDueDate.Text = string.Empty;
-
-            if (FChkDone is CheckBox wChk) wChk.Checked = false;
-
+            FChkDone.Checked = false;
             FTxtTitle.BackColor = SystemColors.Control;
         }
         #endregion
@@ -117,7 +115,7 @@ namespace ToDoManager {
         }
         private void FLstItems_SelectedIndexChanged(object sender, EventArgs e) {
             if (FLstItems.SelectedItem is TodoItem wSelectedItem) {
-                DisplaySelectedItemDetails(wSelectedItem);
+                DisplayItemDetails(wSelectedItem);
             } else {
                 ClearDetailDisplay();
             }
