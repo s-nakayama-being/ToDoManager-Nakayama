@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 
 namespace ToDoManager.Services {
+    /// <summary>
+    /// 
+    /// </summary>
     public class TodoStorageFactory : ITodoStorageFactory {
         private readonly Dictionary<string, Func<ITodoStorage>> FFactories;
 

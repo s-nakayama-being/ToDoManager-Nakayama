@@ -50,8 +50,8 @@ namespace ToDoManager {
 
                 DialogResult = DialogResult.OK;
                 Close();
-            } catch (ArgumentException wEx) {
-                MessageBox.Show(wEx.Message, "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            } catch (ArgumentException ex) {
+                MessageBox.Show(ex.Message, "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using ToDoManager.Models;
 using ToDoManager.Services;
+using ToDoManagerTests.Stubs;
 
 namespace ToDoManagerTests {
     /// <summary>
@@ -10,7 +12,7 @@ namespace ToDoManagerTests {
     /// </summary>
     [TestFixture]
     public class TodoServiceTests {
-        #region 基本機能テスト
+        #region フィールド・初期化
 
         /// <summary>
         /// テスト対象のTodoServiceインスタンスを保持するフィールド
@@ -18,12 +20,22 @@ namespace ToDoManagerTests {
         private TodoService FService;
 
         /// <summary>
+        /// 
+        /// </summary>
+        private StubStorageFactory FDummyFactory;
+
+        /// <summary>
         /// テスト前の初期化処理
         /// </summary>
         [SetUp]
         public void Init() {
-            FService = new TodoService();
+            FDummyFactory = new StubStorageFactory();
+            FService = new TodoService(FDummyFactory);
         }
+
+        #endregion
+
+        #region 基本機能テスト
 
         /// <summary>
         /// AddOrUpdateで新規アイテムが追加されること
@@ -210,6 +222,54 @@ namespace ToDoManagerTests {
             var wContent = new string('a', vLength);
 
             Assert.That(() => TodoService.ValidateItem(vTitle, wContent), Throws.ArgumentException.With.Message.Contain(vExpectedErrorMsg));
+        }
+
+        #endregion
+
+        #region 保存・読込機能テスト
+
+        [Test]
+        public void Export_正常なファイルパスの場合_ストレージのSaveが呼び出されること() {
+            var wItem = new TodoItem { Title = "ExportTest" };
+            FService.AddOrUpdate(wItem);
+
+            FService.Export("dummy.json");
+
+            var wSavedItems = FDummyFactory.FStorage.SavedItems;
+            Assert.That(wSavedItems, Is.Not.Null);
+            Assert.That(wSavedItems.Count, Is.EqualTo(1));
+            Assert.That(wSavedItems[0].Title, Is.EqualTo("ExportTest"));
+        }
+
+        [Test]
+        public void Import_正常なファイルパスの場合_ストレージのLoadが呼び出されること() {
+            FService.AddOrUpdate(new TodoItem { Title = "ImportTest" });
+
+            FService.Import("dummy.json");
+
+            var wItems = FService.GetItems().ToList();
+            Assert.That(wItems.Count, Is.EqualTo(1), "リストが上書きされていること");
+            Assert.That(wItems[0].Id, Is.EqualTo(55));
+            Assert.That(wItems[0].Title, Is.EqualTo("MockTitle"));
+        }
+
+        [TestCase(null, Description = "ファイルパス空：異常系")]
+        [TestCase("", Description = "ファイルパス空：異常系")]
+        [TestCase("   ", Description = "ファイルパス空白：異常系")]
+        public void Export_ファイルパスが空の場合_ArgumentExceptionが発生すること(string vFilePath) {
+            Assert.That(() => FService.Export(vFilePath), Throws.ArgumentException);
+        }
+
+        [TestCase(null, Description = "ファイルパス空：異常系")]
+        [TestCase("", Description = "ファイルパス空：異常系")]
+        [TestCase("   ", Description = "ファイルパス空白：異常系")]
+        public void Import_ファイルパスが空の場合_ArgumentExceptionが発生すること(string vEmptyPath) {
+            Assert.That(() => FService.Import(vEmptyPath), Throws.ArgumentException);
+        }
+
+        [Test]
+        public void Import_サポートされていない拡張子の場合_NotSupportedExceptionが発生すること() {
+            Assert.That(() => FService.Import("test.invalid"), Throws.TypeOf<NotSupportedException>());
         }
 
         #endregion
