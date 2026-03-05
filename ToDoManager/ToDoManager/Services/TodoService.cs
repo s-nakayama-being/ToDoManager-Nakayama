@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
@@ -11,9 +12,11 @@ namespace ToDoManager.Services {
     /// </summary>
     public class TodoService {
         #region フィールド
+
         private List<TodoItem> FItems = new List<TodoItem>();
         private int FNextId = 1;
         private static readonly string C_FilePath = "todos.xml";
+
         #endregion
 
         /// <summary>
@@ -33,6 +36,20 @@ namespace ToDoManager.Services {
         }
 
         /// <summary>
+        /// ToDoアイテムの入力値を検証する
+        /// </summary>
+        /// <param name="vTitle">タイトル</param>
+        /// <param name="vContent">内容</param>
+        /// <exception cref="ArgumentException">バリデーションエラー時</exception>
+        public static void ValidateItem(string vTitle, string vContent) {
+            if (string.IsNullOrWhiteSpace(vTitle)) throw new ArgumentException("タイトルを入力してください。");
+
+            if (vTitle.Length > 20) throw new ArgumentException($"タイトルは20文字以内で入力してください。現在の文字数:{vTitle.Length}");
+
+            if (vContent != null && vContent.Length > 150) throw new ArgumentException($"内容は150文字以内で入力してください。現在の文字数:{vContent.Length}");
+        }
+
+        /// <summary>
         /// ToDoアイテムを追加または更新
         /// </summary>
         /// <param name="vItem">追加または更新するToDoアイテム</param>
@@ -44,6 +61,16 @@ namespace ToDoManager.Services {
             } else {
                 Update(vItem);
             }
+        }
+
+        /// <summary>
+        /// 指定したToDoアイテムを削除
+        /// </summary>
+        /// <param name="vId">削除対象のID</param>
+        public void Delete(int vId) {
+            var wItem = FItems.FirstOrDefault(x => x.Id == vId);
+
+            if (wItem != null) FItems.Remove(wItem);
         }
 
         /// <summary>
@@ -126,6 +153,19 @@ namespace ToDoManager.Services {
                 }
             }
         }
+
+        /// <summary>
+        /// タイトルの部分一致で検索
+        /// </summary>
+        /// <param name="vKeyword">検索キーワード</param>
+        public IEnumerable<TodoItem> SearchByTitle(string vKeyword) {
+            if (string.IsNullOrWhiteSpace(vKeyword)) return FItems;
+
+            var wCompareInfo = CultureInfo.CurrentCulture.CompareInfo;
+
+            return FItems.Where(x => wCompareInfo.IndexOf(x.Title, vKeyword, CompareOptions.IgnoreCase | CompareOptions.IgnoreWidth) >= 0);
+        }
+
         #endregion
     }
 }
