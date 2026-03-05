@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using ToDoManager.Models;
@@ -91,6 +92,66 @@ namespace ToDoManagerTests {
             var wItems = FService.GetItems().ToList();
             Assert.That(wItems[0].Title, Is.EqualTo("Test1"), "追加順（ID順）に並んでいること");
             Assert.That(wItems[1].Title, Is.EqualTo("Test2"));
+        }
+
+        #endregion
+
+        #region 保存・読込機能テスト
+
+        [TearDown]
+        public void Cleanup() {
+            if (File.Exists("todos.xml")) {
+                File.Delete("todos.xml");
+            }
+        }
+
+        [Test]
+        public void Export_正常なToDoリストを保存する場合_例外が発生しない() {
+            var wItem = new TodoItem { Title = "テスト", DueDate = DateTime.Today, IsCompleted = false };
+            FService.AddOrUpdate(wItem);
+
+            FService.Export();
+
+            Assert.That(File.Exists("todos.xml"), Is.True, "ファイルが作成されること");
+            var wXmlContent = File.ReadAllText("todos.xml");
+            Assert.That(wXmlContent, Does.Contain("<Title>テスト</Title>"), "保存されたXMLにアイテムのタイトルが含まれること");
+        }
+
+        [Test]
+        public void Import_正常なXmlファイルからデータを読み込む場合_例外が発生しない() {
+            var wValidateXml =
+                @"<?xml version=""1.0"" encoding=""utf-8""?>
+                    <ArrayOfTodoItem>
+                        <TodoItem>
+                            <Id>1</Id>
+                            <Title>テスト</Title>
+                            <IsCompleted>false</IsCompleted>
+                        </TodoItem>
+                    </ArrayOfTodoItem>";
+            File.WriteAllText("todos.xml", wValidateXml);
+
+            bool wImportResult = FService.Import();
+
+            Assert.That(wImportResult, Is.True, "正常なXmlファイルからの読込はtrueを返すこと");
+            var wLoadedItems = FService.GetItems().ToList();
+            Assert.That(wLoadedItems.Count, Is.EqualTo(1), "アイテムが1件読み込まれること");
+            Assert.That(wLoadedItems[0].Title, Is.EqualTo("テスト"), "読み込まれたアイテムのタイトルが一致すること");
+        }
+
+        [Test]
+        public void Import_ファイルが存在しない場合_falseを返す() {
+            bool wImportResult = FService.Import();
+
+            Assert.That(wImportResult, Is.False, "ファイルが存在しない場合はfalseを返すこと");
+        }
+
+        [TestCase("<InvalidData>不正データ</InvalidData>", Description = "不正なXmlタグ：異常系")]
+        [TestCase("", Description = "空ファイル：異常系")]
+        [TestCase("ただのテキスト", Description = "Xml形式ではない内容：異常系")]
+        public void Import_ファイルのデータ形式が不正な場合_InvalidDataExceptionが発生する(string vFileContent) {
+            File.WriteAllText("todos.xml", vFileContent);
+
+            Assert.That(() => FService.Import(), Throws.TypeOf<InvalidDataException>(), "ファイルのデータ形式が不正な場合はInvalidDataExceptionが発生すること");
         }
 
         #endregion
