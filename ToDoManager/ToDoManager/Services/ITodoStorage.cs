@@ -9,15 +9,15 @@ namespace ToDoManager.Services {
         /// <summary>
         /// ファイルからデータを読込
         /// </summary>
-        /// <param name="vFilePath">読込対象のファイルパス</param>
-        /// <returns>読込んだToDoアイテムのコレクション</returns>
+        /// <param name="vFilePath">読込先のファイルパス</param>
+        /// <returns>読み込まれたToDoアイテムの一覧</returns>
         IEnumerable<TodoItem> Load(string vFilePath);
 
         /// <summary>
         /// ファイルにデータを保存
         /// </summary>
-        /// <param name="vFilePath">保存対象のファイルパス</param>
-        /// <param name="vItems">保存するToDoアイテムのコレクション</param>
+        /// <param name="vFilePath">保存先のファイルパス</param>
+        /// <param name="vItems">保存するToDoアイテムの一覧</param>
         void Save(string vFilePath, IEnumerable<TodoItem> vItems);
     }
 }

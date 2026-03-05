@@ -17,12 +17,10 @@ namespace ToDoManager {
         public MainForm() {
             InitializeComponent();
 
-            var wStorageFactory = new TodoStorageFactory();
+            TodoStorage.Register(".json", () => new JsonTodoStorage());
+            TodoStorage.Register(".xml", () => new XmlTodoStorage());
 
-            wStorageFactory.Register(TodoService.C_ExtJson, () => new JsonTodoStorage());
-            wStorageFactory.Register(TodoService.C_ExtXml, () => new XmlTodoStorage());
-
-            FService = new TodoService(wStorageFactory);
+            FService = new TodoService(TodoStorage.Create);
 
             RefreshList();
         }
@@ -118,10 +116,7 @@ namespace ToDoManager {
         private void FBtnDelete_Click(object sender, EventArgs e) => DeleteItem();
         private void FBtnSave_Click(object sender, EventArgs e) {
             using (var wDialog = new SaveFileDialog()) {
-                wDialog.Title = "ToDoデータの保存";
-                wDialog.Filter = $"JSONファイル (*{TodoService.C_ExtJson})|*{TodoService.C_ExtJson}|XNLファイル (*{TodoService.C_ExtXml})|*{TodoService.C_ExtXml}";
-                wDialog.FilterIndex = 1;
-                wDialog.OverwritePrompt = true;
+                wDialog.Filter = FService.FileFilter;
 
                 if (wDialog.ShowDialog() == DialogResult.OK) {
                     try {
@@ -135,9 +130,7 @@ namespace ToDoManager {
         }
         private void FBtnLoad_Click(object sender, EventArgs e) {
             using (var wDialog = new OpenFileDialog()) {
-                wDialog.Title = "ToDoデータの読込";
-                wDialog.Filter = $"JSONファイル (*{TodoService.C_ExtJson})|*{TodoService.C_ExtJson}|XNLファイル (*{TodoService.C_ExtXml})|*{TodoService.C_ExtXml}";
-                wDialog.FilterIndex = 1;
+                wDialog.Filter = FService.FileFilter;
 
                 if (wDialog.ShowDialog() == DialogResult.OK) {
                     try {

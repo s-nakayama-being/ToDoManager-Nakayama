@@ -98,9 +98,8 @@
     <Compile Include="Models\TodoItem.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\ITodoStorageFactory.cs" />
     <Compile Include="Services\JsonTodoStorage.cs" />
-    <Compile Include="Services\TodoStorageFactory.cs" />
+    <Compile Include="Services\TodoStorage.cs" />
     <Compile Include="Services\XmlTodoStorage.cs" />
     <Compile Include="Services\ITodoStorage.cs" />
     <Compile Include="Services\TodoService.cs" />

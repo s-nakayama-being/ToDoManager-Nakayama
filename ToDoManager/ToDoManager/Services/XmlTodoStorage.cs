@@ -11,10 +11,10 @@ namespace ToDoManager.Services {
     /// </summary>
     public class XmlTodoStorage : ITodoStorage {
         /// <summary>
-        /// 指定されたファイルパスからToDoアイテムのリストを読込
+        /// XML形式のファイルからToDoリストを復元
         /// </summary>
-        /// <param name="vFilePath">読込対象のファイルパス</param>
-        /// <returns>読込んだToDoアイテムのコレクション</returns>
+        /// <param name="vFilePath">読込先のファイルパス</param>
+        /// <returns>読み込まれたToDoアイテムの一覧</returns>
         /// <exception cref="FileNotFoundException">指定されたファイルが存在しない場合</exception>
         /// <exception cref="InvalidDataException">ファイルのデータ形式が不正な場合</exception>
         public IEnumerable<TodoItem> Load(string vFilePath) {
@@ -32,10 +32,10 @@ namespace ToDoManager.Services {
         }
 
         /// <summary>
-        /// 指定されたToDoアイテムのコレクションをXML形式でファイルに保存
+        /// ToDoリストをXML形式ファイルとして保存
         /// </summary>
-        /// <param name="vFilePath">保存対象のファイルパス</param>
-        /// <param name="vItems">保存するToDoアイテムのコレクション</param>
+        /// <param name="vFilePath">保存先のファイルパス</param>
+        /// <param name="vItems">保存するToDoアイテムの一覧</param>
         public void Save(string vFilePath, IEnumerable<TodoItem> vItems) {
             var wSerializer = new XmlSerializer(typeof(List<TodoItem>));
 

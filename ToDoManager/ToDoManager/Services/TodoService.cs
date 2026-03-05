@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using ToDoManager.Models;
 
@@ -14,23 +13,21 @@ namespace ToDoManager.Services {
 
         private List<TodoItem> FItems = new List<TodoItem>();
         private int FNextId = 1;
-
-        private readonly ITodoStorageFactory FStorageFactory;
-
-        public const string C_ExtJson = ".json";
-        public const string C_ExtXml = ".xml";
+        private readonly Func<string, ITodoStorage> FStorageProvider;
 
         #endregion
 
         /// <summary>
-        /// コンストラクタ
+        /// 新しいインスタンスの初期化
         /// </summary>
-        public TodoService(ITodoStorageFactory vStorageFactory) {
-            FStorageFactory = vStorageFactory ?? throw new ArgumentNullException(nameof(vStorageFactory));
-            FItems = new List<TodoItem>();
-        }
+        public TodoService(Func<string, ITodoStorage> vProvider) => FStorageProvider = vProvider;
 
         #region publicメソッド
+
+        /// <summary>
+        /// ファイル選択ダイアログで使用する保存形式に対応したフィルター文字列を取得する
+        /// </summary>
+        public string FileFilter => TodoStorage.GetFilter();
 
         /// <summary>
         /// ToDoアイテムの一覧を取得する
@@ -107,7 +104,7 @@ namespace ToDoManager.Services {
         public void Export(string vFilePath) {
             if (string.IsNullOrWhiteSpace(vFilePath)) throw new ArgumentException("ファイルパスが指定されていません。");
 
-            ITodoStorage wStorage = FStorageFactory.Create(vFilePath);
+            var wStorage = FStorageProvider(vFilePath);
             wStorage.Save(vFilePath, FItems);
         }
 
@@ -117,7 +114,7 @@ namespace ToDoManager.Services {
         public void Import(string vFilePath) {
             if (string.IsNullOrWhiteSpace(vFilePath)) throw new ArgumentException("ファイルパスが指定されていません。");
 
-            ITodoStorage wStorage = FStorageFactory.Create(vFilePath);
+            var wStorage = FStorageProvider(vFilePath);
             var wLoadedItems = wStorage.Load(vFilePath);
 
             FItems = wLoadedItems.ToList();
