@@ -13,6 +13,10 @@
         private System.Windows.Forms.DateTimePicker FDtpDueDate;
         private System.Windows.Forms.CheckBox FChkDone;
         private System.Windows.Forms.Button FBtnSave;
+        private System.Windows.Forms.ComboBox FCmbPriority;
+        private System.Windows.Forms.Label FEditTitleLabel;
+        private System.Windows.Forms.Label FEditContentLabel;
+        private System.Windows.Forms.Label FEditPriorityLabel;
 
         /// <summary>
         /// 使用中のリソースをすべてクリーンアップします。
@@ -42,6 +46,8 @@
             this.FBtnSave = new System.Windows.Forms.Button();
             this.FEditTitleLabel = new System.Windows.Forms.Label();
             this.FEditContentLabel = new System.Windows.Forms.Label();
+            this.FEditPriorityLabel = new System.Windows.Forms.Label();
+            this.FCmbPriority = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // FTxtTitle
@@ -109,11 +115,35 @@
             this.FEditContentLabel.TabIndex = 6;
             this.FEditContentLabel.Text = "内容";
             // 
+            // FEditPriorityLabel
+            // 
+            this.FEditPriorityLabel.AutoSize = true;
+            this.FEditPriorityLabel.Location = new System.Drawing.Point(20, 193);
+            this.FEditPriorityLabel.Name = "FEditPriorityLabel";
+            this.FEditPriorityLabel.Size = new System.Drawing.Size(41, 12);
+            this.FEditPriorityLabel.TabIndex = 7;
+            this.FEditPriorityLabel.Text = "優先度";
+            // 
+            // FCmbPriority
+            // 
+            this.FCmbPriority.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.FCmbPriority.FormattingEnabled = true;
+            this.FCmbPriority.Items.AddRange(new object[] {
+            "高",
+            "中",
+            "低"});
+            this.FCmbPriority.Location = new System.Drawing.Point(20, 208);
+            this.FCmbPriority.Name = "FCmbPriority";
+            this.FCmbPriority.Size = new System.Drawing.Size(213, 20);
+            this.FCmbPriority.TabIndex = 8;
+            // 
             // TodoEditForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(272, 301);
+            this.Controls.Add(this.FCmbPriority);
+            this.Controls.Add(this.FEditPriorityLabel);
             this.Controls.Add(this.FEditContentLabel);
             this.Controls.Add(this.FEditTitleLabel);
             this.Controls.Add(this.FTxtTitle);
@@ -123,6 +153,7 @@
             this.Controls.Add(this.FBtnSave);
             this.MinimumSize = new System.Drawing.Size(267, 314);
             this.Name = "TodoEditForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ToDo編集";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -131,7 +162,5 @@
 
         #endregion
 
-        private System.Windows.Forms.Label FEditTitleLabel;
-        private System.Windows.Forms.Label FEditContentLabel;
     }
 }

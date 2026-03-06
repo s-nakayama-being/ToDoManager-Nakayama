@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
@@ -11,9 +12,11 @@ namespace ToDoManager.Services {
     /// </summary>
     public class TodoService {
         #region フィールド
+
         private List<TodoItem> FItems = new List<TodoItem>();
         private int FNextId = 1;
-        private string C_FilePath = "todos.xml";
+        private static readonly string C_FilePath = "todos.xml";
+
         #endregion
 
         /// <summary>
@@ -28,8 +31,20 @@ namespace ToDoManager.Services {
         /// ToDoアイテムの一覧を取得する
         /// </summary>
         /// <returns>登録されているToDoアイテムの読み取り専用リスト</returns>
-        public IReadOnlyList<TodoItem> GetItems() {
-            return FItems;
+        public IReadOnlyList<TodoItem> GetItems() => FItems.AsReadOnly();
+
+        /// <summary>
+        /// ToDoアイテムの入力値を検証する
+        /// </summary>
+        /// <param name="vTitle">タイトル</param>
+        /// <param name="vContent">内容</param>
+        /// <exception cref="ArgumentException">バリデーションエラー時</exception>
+        public static void ValidateItem(string vTitle, string vContent) {
+            if (string.IsNullOrWhiteSpace(vTitle)) throw new ArgumentException("タイトルを入力してください。");
+
+            if (vTitle.Length > 20) throw new ArgumentException($"タイトルは20文字以内で入力してください。現在の文字数:{vTitle.Length}");
+
+            if (vContent != null && vContent.Length > 150) throw new ArgumentException($"内容は150文字以内で入力してください。現在の文字数:{vContent.Length}");
         }
 
         /// <summary>
@@ -44,6 +59,16 @@ namespace ToDoManager.Services {
             } else {
                 Update(vItem);
             }
+        }
+
+        /// <summary>
+        /// 指定したToDoアイテムを削除
+        /// </summary>
+        /// <param name="vId">削除対象のID</param>
+        public void Delete(int vId) {
+            var wItem = FItems.FirstOrDefault(x => x.Id == vId);
+
+            if (wItem != null) FItems.Remove(wItem);
         }
 
         /// <summary>
@@ -67,6 +92,7 @@ namespace ToDoManager.Services {
             wExisting.Content = vItem.Content;
             wExisting.DueDate = vItem.DueDate;
             wExisting.IsCompleted = vItem.IsCompleted;
+            wExisting.Priority = vItem.Priority;
         }
 
         /// <summary>
@@ -74,7 +100,10 @@ namespace ToDoManager.Services {
         /// </summary>
         public void Export() {
             var wSerializer = new XmlSerializer(typeof(List<TodoItem>));
-            using (var wWriter = new StreamWriter(C_FilePath)) wSerializer.Serialize(wWriter, FItems);
+
+            using (var wWriter = new StreamWriter(C_FilePath)) {
+                wSerializer.Serialize(wWriter, FItems);
+            }
         }
 
         /// <summary>
@@ -84,9 +113,14 @@ namespace ToDoManager.Services {
             if (!File.Exists(C_FilePath)) return false;
 
             var wSerializer = new XmlSerializer(typeof(List<TodoItem>));
-            var wStreamReader = new StreamReader(C_FilePath);
-            FItems = (List<TodoItem>)wSerializer.Deserialize(wStreamReader);
-            
+
+            try {
+                using (var wStreamReader = new StreamReader(C_FilePath)) {
+                    FItems = (List<TodoItem>)wSerializer.Deserialize(wStreamReader);
+                }
+            } catch (InvalidOperationException ex) {
+                throw new InvalidDataException("ファイルのデータ形式が不正です。", ex);
+            }
 
             FNextId = FItems.Any() ? FItems.Max(x => x.Id) + 1 : 1;
 
@@ -94,30 +128,23 @@ namespace ToDoManager.Services {
         }
 
         /// <summary>
-        /// 期限順にソート
+        /// 指定されたソート条件でTodoリストをソート
         /// </summary>
-        public void SortByDueDate() {
-            var wTodoItems = FItems.OrderBy(x => x.DueDate).ToList();
-        }
+        /// <param name="vSortDefinition">適用するソート条件</param>
+        public void SortItems(SortStrategy vSortDefinition) => FItems = vSortDefinition.ApplySort(FItems).ToList();
 
         /// <summary>
-        /// 追加順にソート
+        /// タイトルの部分一致で検索
         /// </summary>
-        public void SortByAddedOrder() {
-            for (int i = 0; i < FItems.Count - 1; i++) {
-                int wMinIndex = i;
-                for (int j = i + 1; j < FItems.Count; j++) {
-                    if (FItems[j].Id < FItems[wMinIndex].Id) {
-                        wMinIndex = j;
-                    }
-                }
-                if (wMinIndex != i) {
-                    var wTemp = FItems[i];
-                    FItems[i] = FItems[wMinIndex];
-                    FItems[wMinIndex] = wTemp;
-                }
-            }
+        /// <param name="vKeyword">検索キーワード</param>
+        public IEnumerable<TodoItem> SearchByTitle(string vKeyword) {
+            if (string.IsNullOrWhiteSpace(vKeyword)) return FItems;
+
+            var wCompareInfo = CultureInfo.CurrentCulture.CompareInfo;
+
+            return FItems.Where(x => wCompareInfo.IndexOf(x.Title, vKeyword, CompareOptions.IgnoreCase | CompareOptions.IgnoreWidth) >= 0);
         }
+
         #endregion
     }
 }
