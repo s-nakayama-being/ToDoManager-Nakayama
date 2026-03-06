@@ -11,7 +11,7 @@ namespace ToDoManager {
         #region フィールド・初期化
         private readonly TodoService FService = new TodoService();
 
-        private SortStrategy FCurrentSort = SortStrategy.FAddedOrder;
+        private SortStrategy FCurrentSort = SortStrategy.C_AddedOrder;
 
         public MainForm() {
             InitializeComponent();
@@ -25,7 +25,7 @@ namespace ToDoManager {
         /// ToDoリストを更新
         /// </summary>
         private void UpdateList() {
-            FService.SortItems(FCurrentSort.SortFunction);
+            FService.SortItems(FCurrentSort);
 
             FLstItems.Items.Clear();
 
@@ -37,12 +37,12 @@ namespace ToDoManager {
         /// </summary>
         /// <param name="vSortType"></param>
         private void UpdateSortMenuState() {
-            sortByDueDateToolStripMenuItem.Checked = (FCurrentSort == SortStrategy.FDueDate);
-            sortByAddedOrderToolStripMenuItem.Checked = (FCurrentSort == SortStrategy.FAddedOrder);
+            sortByDueDateToolStripMenuItem.Checked = (FCurrentSort == SortStrategy.C_DueDate);
+            sortByAddedOrderToolStripMenuItem.Checked = (FCurrentSort == SortStrategy.C_AddedOrder);
         }
 
         /// <summary>
-        /// 初期ソートを適用
+        /// 指定されたソートを適用し、ToDoリストを更新
         /// </summary>
         /// <param name="vSortType">ソートの種類</param>
         private void ApplySort(SortStrategy vSortType) {
@@ -93,8 +93,8 @@ namespace ToDoManager {
         private void FBtnAdd_Click(object sender, EventArgs e) => AddItem();
         private void FBtnEdit_Click(object sender, EventArgs e) => EditItem();
         private void FBtnXml_Click(object sender, EventArgs e) => FService.Export();
-        private void SortByDueDateToolStripMenuItem_Click(object sender, EventArgs e) => ApplySort(SortStrategy.FDueDate);
-        private void SortByAddedOrderToolStripMenuItem_Click(object sender, EventArgs e) => ApplySort(SortStrategy.FAddedOrder);
+        private void SortByDueDateToolStripMenuItem_Click(object sender, EventArgs e) => ApplySort(SortStrategy.C_DueDate);
+        private void SortByAddedOrderToolStripMenuItem_Click(object sender, EventArgs e) => ApplySort(SortStrategy.C_AddedOrder);
         private void FBtnXmlLoad_Click(object sender, EventArgs e) {
             if (FService.Import()) {
                 UpdateList();

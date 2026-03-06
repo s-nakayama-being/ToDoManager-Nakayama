@@ -63,7 +63,7 @@ namespace ToDoManagerTests {
             FService.AddOrUpdate(wItem1);
             FService.AddOrUpdate(wItem2);
 
-            FService.SortItems(x => x.DueDate);
+            FService.SortItems(SortStrategy.C_DueDate);
 
             var wItems = FService.GetItems().ToList();
             Assert.That(wItems[0].Title, Is.EqualTo("Test2"), "期限が早いものが先頭に来ること");
@@ -80,7 +80,7 @@ namespace ToDoManagerTests {
             FService.AddOrUpdate(wItem1);
             FService.AddOrUpdate(wItem2);
 
-            FService.SortItems(x => x.Id);
+            FService.SortItems(SortStrategy.C_AddedOrder);
 
             var wItems = FService.GetItems().ToList();
             Assert.That(wItems[0].Title, Is.EqualTo("Test1"), "追加順（ID順）に並んでいること");

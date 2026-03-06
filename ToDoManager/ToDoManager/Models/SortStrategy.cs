@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ToDoManager.Models {
     /// <summary>
@@ -6,19 +8,36 @@ namespace ToDoManager.Models {
     /// </summary>
     public class SortStrategy {
         #region フィールド
-        public static readonly SortStrategy FAddedOrder = new SortStrategy(x => x.Id);
-        public static readonly SortStrategy FDueDate = new SortStrategy(x => x.DueDate);
+
+        /// <summary>
+        /// 追加順のソート条件
+        /// </summary>
+        public static readonly SortStrategy C_AddedOrder = new SortStrategy(x => x.OrderBy(y => y.Id));
+
+        /// <summary>
+        /// 期限順のソート条件
+        /// </summary>
+        public static readonly SortStrategy C_DueDate = new SortStrategy(x => x.OrderBy(y => y.DueDate));
+
         #endregion
 
         /// <summary>
-        /// ソートのロジックを定義する。TodoItemを受け取り、ソートに使用する値を返す。
+        /// ソート処理の実体を保持するデリゲート
         /// </summary>
-        public Func<TodoItem, object> SortFunction { get; }
+        private readonly Func<IEnumerable<TodoItem>, IOrderedEnumerable<TodoItem>> FSortFunction;
 
         /// <summary>
         /// コンストラクタ
+        /// </summary
+        /// <param name="vSortFunction">適用するソート処理</param>
+        private SortStrategy(Func<IEnumerable<TodoItem>, IOrderedEnumerable<TodoItem>> vSortFunction) => this.FSortFunction = vSortFunction;
+
+        /// <summary>
+        /// 指定されたToDoリストに対して、ソートを適用
         /// </summary>
-        /// <param name="vKeySelector">ToDoアイテムを受け取り、ソートに使用する値を取得する処理（ラムダ式）</param>
-        private SortStrategy(Func<TodoItem, object> vSortFunction) => SortFunction = vSortFunction;
+        /// <param name="vItems">対象のToDoリスト</param>
+        /// <returns>ソート済みのToDoリスト</returns>
+        public IOrderedEnumerable<TodoItem> ApplySort(IEnumerable<TodoItem> vItems) => this.FSortFunction(vItems);
+
     }
 }

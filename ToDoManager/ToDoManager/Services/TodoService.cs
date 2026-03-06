@@ -93,11 +93,11 @@ namespace ToDoManager.Services {
         }
 
         /// <summary>
-        /// 任意のキーでソート
+        /// 指定されたソート条件でTodoリストをソート
         /// </summary>
-        /// <typeparam name="TKey">ソートのキーの型</typeparam>
-        /// <param name="vKeySelector">キーを選択するメソッド</param>
-        public void SortItems<TKey>(Func<TodoItem, TKey> vKeySelector) => FItems = FItems.OrderBy(vKeySelector).ToList();
+        /// <param name="vSortDefinition">適用するソート条件</param>
+        public void SortItems(SortStrategy vSortDefinition) => FItems = vSortDefinition.ApplySort(FItems).ToList();
+
         #endregion
     }
 }
