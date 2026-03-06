@@ -3,6 +3,16 @@ using System.Xml.Serialization;
 
 namespace ToDoManager.Models {
     /// <summary>
+    /// 優先度を表す列挙型
+    /// </summary>
+    public enum TodoPriorityEnum {
+        // 数字は今後の優先度ソート機能の実装を見据えて記載している
+        High = 0,
+        Medium = 1,
+        Low = 2
+    }
+
+    /// <summary>
     /// ToDoアイテムのエンティティクラス
     /// </summary>
     [Serializable]
@@ -35,6 +45,12 @@ namespace ToDoManager.Models {
         /// </summary>
         [XmlElement("IsCompleted")]
         public bool IsCompleted { get; set; }
+
+        /// <summary>
+        /// 優先度（デフォルトはMedium）
+        /// </summary>
+        [XmlElement("Priority")]
+        public TodoPriorityEnum Priority { get; set; } = TodoPriorityEnum.Medium;
 
         /// <summary>
         /// タイトルと完了状態を表す文字列を返します。
