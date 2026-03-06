@@ -71,6 +71,7 @@
             this.FTxtTitle.Location = new System.Drawing.Point(593, 158);
             this.FTxtTitle.Margin = new System.Windows.Forms.Padding(4);
             this.FTxtTitle.Name = "FTxtTitle";
+            this.FTxtTitle.ReadOnly = true;
             this.FTxtTitle.Size = new System.Drawing.Size(265, 22);
             this.FTxtTitle.TabIndex = 5;
             // 
@@ -81,12 +82,14 @@
             this.FTxtContent.Margin = new System.Windows.Forms.Padding(4);
             this.FTxtContent.Multiline = true;
             this.FTxtContent.Name = "FTxtContent";
+            this.FTxtContent.ReadOnly = true;
             this.FTxtContent.Size = new System.Drawing.Size(265, 74);
             this.FTxtContent.TabIndex = 6;
             // 
             // FDtpDueDate
             // 
             this.FDtpDueDate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.FDtpDueDate.Enabled = false;
             this.FDtpDueDate.Location = new System.Drawing.Point(593, 316);
             this.FDtpDueDate.Margin = new System.Windows.Forms.Padding(4);
             this.FDtpDueDate.Name = "FDtpDueDate";
@@ -96,6 +99,7 @@
             // FChkDone
             // 
             this.FChkDone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.FChkDone.Enabled = false;
             this.FChkDone.Location = new System.Drawing.Point(593, 348);
             this.FChkDone.Margin = new System.Windows.Forms.Padding(4);
             this.FChkDone.Name = "FChkDone";

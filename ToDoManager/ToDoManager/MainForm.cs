@@ -10,26 +10,17 @@ namespace ToDoManager {
     /// </summary>
     public partial class MainForm : Form {
         #region フィールド・初期化
+
         private readonly TodoService FService = new TodoService();
         public MainForm() {
             InitializeComponent();
 
-            InitializeDetailArea();
-
             UpdateList();
         }
+
         #endregion
 
         #region UI操作
-        /// <summary>
-        /// 詳細表示エリアのコントロールを初期化
-        /// </summary>
-        private void InitializeDetailArea() {
-            FTxtTitle.ReadOnly = true;
-            FTxtContent.ReadOnly = true;
-            FDtpDueDate.Enabled = false;
-            FChkDone.Enabled = false;
-        }
 
         /// <summary>
         /// ToDoリストを更新
@@ -41,6 +32,7 @@ namespace ToDoManager {
         #endregion
 
         #region ToDo操作
+
         /// <summary>
         /// 追加アイテムを処理
         /// </summary>
@@ -79,12 +71,11 @@ namespace ToDoManager {
         /// <param name="vItem">表示対象のアイテム</param>
         private void DisplayItemDetails(TodoItem vItem) {
             FTxtTitle.Text = vItem.Title;
-            FTxtTitle.BackColor = SystemColors.Control;
             FTxtContent.Text = vItem.Content;
             FDtpDueDate.Text = vItem.DueDate.ToString("yyyy/M/d");
             FChkDone.Checked = vItem.IsCompleted;
 
-            if (!vItem.IsCompleted && vItem.DueDate < DateTime.Today) FTxtTitle.BackColor = Color.Yellow;
+            FTxtTitle.BackColor = (!vItem.IsCompleted && vItem.DueDate < DateTime.Today) ? Color.Yellow : SystemColors.Control;
         }
 
         /// <summary>
@@ -97,9 +88,11 @@ namespace ToDoManager {
             FChkDone.Checked = false;
             FTxtTitle.BackColor = SystemColors.Control;
         }
+
         #endregion
 
         #region イベントハンドラ
+
         private void FBtnAdd_Click(object sender, EventArgs e) => AddItem();
         private void FBtnEdit_Click(object sender, EventArgs e) => EditItem();
         private void FBtnXml_Click(object sender, EventArgs e) => FService.Export();
@@ -125,6 +118,7 @@ namespace ToDoManager {
 
             if (wIndex == ListBox.NoMatches) FLstItems.SelectedIndex = -1;
         }
+
         #endregion
     }
 }
