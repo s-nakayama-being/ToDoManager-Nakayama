@@ -31,7 +31,7 @@ namespace ToDoManager.Services {
         /// ToDoアイテムの一覧を取得する
         /// </summary>
         /// <returns>登録されているToDoアイテムの読み取り専用リスト</returns>
-        public IReadOnlyList<TodoItem> GetItems() => FItems;
+        public IReadOnlyList<TodoItem> GetItems() => FItems.AsReadOnly();
 
         /// <summary>
         /// ToDoアイテムの入力値を検証する
@@ -100,7 +100,10 @@ namespace ToDoManager.Services {
         /// </summary>
         public void Export() {
             var wSerializer = new XmlSerializer(typeof(List<TodoItem>));
-            using (var wWriter = new StreamWriter(C_FilePath)) wSerializer.Serialize(wWriter, FItems);
+
+            using (var wWriter = new StreamWriter(C_FilePath)) {
+                wSerializer.Serialize(wWriter, FItems);
+            }
         }
 
         /// <summary>
@@ -110,8 +113,14 @@ namespace ToDoManager.Services {
             if (!File.Exists(C_FilePath)) return false;
 
             var wSerializer = new XmlSerializer(typeof(List<TodoItem>));
-            var wStreamReader = new StreamReader(C_FilePath);
-            FItems = (List<TodoItem>)wSerializer.Deserialize(wStreamReader);
+
+            try {
+                using (var wStreamReader = new StreamReader(C_FilePath)) {
+                    FItems = (List<TodoItem>)wSerializer.Deserialize(wStreamReader);
+                }
+            } catch (InvalidOperationException ex) {
+                throw new InvalidDataException("ファイルのデータ形式が不正です。", ex);
+            }
 
             FNextId = FItems.Any() ? FItems.Max(x => x.Id) + 1 : 1;
 
