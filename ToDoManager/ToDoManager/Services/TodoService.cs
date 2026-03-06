@@ -128,30 +128,10 @@ namespace ToDoManager.Services {
         }
 
         /// <summary>
-        /// 期限順にソート
+        /// 指定されたソート条件でTodoリストをソート
         /// </summary>
-        public void SortByDueDate() {
-            var wTodoItems = FItems.OrderBy(x => x.DueDate).ToList();
-        }
-
-        /// <summary>
-        /// 追加順にソート
-        /// </summary>
-        public void SortByAddedOrder() {
-            for (int i = 0; i < FItems.Count - 1; i++) {
-                int wMinIndex = i;
-                for (int j = i + 1; j < FItems.Count; j++) {
-                    if (FItems[j].Id < FItems[wMinIndex].Id) {
-                        wMinIndex = j;
-                    }
-                }
-                if (wMinIndex != i) {
-                    var wTemp = FItems[i];
-                    FItems[i] = FItems[wMinIndex];
-                    FItems[wMinIndex] = wTemp;
-                }
-            }
-        }
+        /// <param name="vSortDefinition">適用するソート条件</param>
+        public void SortItems(SortStrategy vSortDefinition) => FItems = vSortDefinition.ApplySort(FItems).ToList();
 
         /// <summary>
         /// タイトルの部分一致で検索

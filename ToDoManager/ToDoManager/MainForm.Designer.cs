@@ -243,16 +243,18 @@
             // 
             // sortByDueDateToolStripMenuItem
             // 
+            this.sortByDueDateToolStripMenuItem.CheckOnClick = true;
             this.sortByDueDateToolStripMenuItem.Name = "sortByDueDateToolStripMenuItem";
             this.sortByDueDateToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
-            this.sortByDueDateToolStripMenuItem.Text = "期限順(O)";
+            this.sortByDueDateToolStripMenuItem.Text = "期限順(&O)";
             this.sortByDueDateToolStripMenuItem.Click += new System.EventHandler(this.SortByDueDateToolStripMenuItem_Click);
             // 
             // sortByAddedOrderToolStripMenuItem
             // 
+            this.sortByAddedOrderToolStripMenuItem.CheckOnClick = true;
             this.sortByAddedOrderToolStripMenuItem.Name = "sortByAddedOrderToolStripMenuItem";
             this.sortByAddedOrderToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
-            this.sortByAddedOrderToolStripMenuItem.Text = "追加順(T)";
+            this.sortByAddedOrderToolStripMenuItem.Text = "追加順(&T)";
             this.sortByAddedOrderToolStripMenuItem.Click += new System.EventHandler(this.SortByAddedOrderToolStripMenuItem_Click);
             // 
             // FBtnLoad
