@@ -93,6 +93,7 @@
             this.FTxtTitle.Location = new System.Drawing.Point(445, 126);
             this.FTxtTitle.Name = "FTxtTitle";
             this.FTxtTitle.Size = new System.Drawing.Size(200, 19);
+            this.FTxtTitle.ReadOnly = true;
             this.FTxtTitle.TabIndex = 5;
             // 
             // FTxtContent
@@ -101,12 +102,14 @@
             this.FTxtContent.Location = new System.Drawing.Point(445, 184);
             this.FTxtContent.Multiline = true;
             this.FTxtContent.Name = "FTxtContent";
+            this.FTxtContent.ReadOnly = true;
             this.FTxtContent.Size = new System.Drawing.Size(200, 60);
             this.FTxtContent.TabIndex = 6;
             // 
             // FDtpDueDate
             // 
             this.FDtpDueDate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.FDtpDueDate.Enabled = false;
             this.FDtpDueDate.Location = new System.Drawing.Point(445, 253);
             this.FDtpDueDate.Name = "FDtpDueDate";
             this.FDtpDueDate.Size = new System.Drawing.Size(200, 19);
@@ -116,6 +119,7 @@
             // 
             this.FChkDone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.FChkDone.Location = new System.Drawing.Point(445, 278);
+            this.FChkDone.Enabled = false;
             this.FChkDone.Name = "FChkDone";
             this.FChkDone.Size = new System.Drawing.Size(80, 19);
             this.FChkDone.TabIndex = 9;
@@ -132,6 +136,8 @@
             this.FLstItems.Name = "FLstItems";
             this.FLstItems.Size = new System.Drawing.Size(412, 448);
             this.FLstItems.TabIndex = 1;
+            this.FLstItems.SelectedIndexChanged += new System.EventHandler(this.FLstItems_SelectedIndexChanged);
+            this.FLstItems.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FLstItems_MouseDown);
             // 
             // FBtnAdd
             // 
@@ -331,6 +337,7 @@
             // FCmbPriority
             // 
             this.FCmbPriority.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.FCmbPriority.Enabled = false;
             this.FCmbPriority.FormattingEnabled = true;
             this.FCmbPriority.Items.AddRange(new object[] {
             "高",

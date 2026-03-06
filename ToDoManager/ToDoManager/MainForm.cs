@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using ToDoManager.Models;
@@ -126,6 +127,33 @@ namespace ToDoManager {
             RefreshList();
         }
 
+        /// <summary>
+        /// アイテムの詳細を表示
+        /// </summary>
+        /// <param name="vItem">表示対象のアイテム</param>
+        private void DisplayItemDetails(TodoItem vItem) {
+            FTxtTitle.Text = vItem.Title;
+            FTxtContent.Text = vItem.Content;
+            FDtpDueDate.Text = vItem.DueDate.ToString("yyyy/M/d");
+            FChkDone.Checked = vItem.IsCompleted;
+            FCmbPriority.SelectedIndex = (int)vItem.Priority;
+
+            FTxtTitle.BackColor = (!vItem.IsCompleted && vItem.DueDate < DateTime.Today) ? Color.Yellow : SystemColors.Control;
+        }
+
+        /// <summary>
+        /// 詳細表示エリアをクリア
+        /// </summary>
+        private void ClearDetailDisplay() {
+            FTxtTitle.Text = string.Empty;
+            FTxtContent.Text = string.Empty;
+            FDtpDueDate.Text = string.Empty;
+            FChkDone.Checked = false;
+            FCmbPriority.SelectedIndex = -1;
+            FTxtTitle.BackColor = SystemColors.Control;
+        }
+
+
         #endregion
 
         #region イベントハンドラ
@@ -143,6 +171,18 @@ namespace ToDoManager {
             } else {
                 MessageBox.Show(this, "指定ファイルが存在しません", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+        private void FLstItems_SelectedIndexChanged(object sender, EventArgs e) {
+            if (FLstItems.SelectedItem is TodoItem wSelectedItem) {
+                DisplayItemDetails(wSelectedItem);
+            } else {
+                ClearDetailDisplay();
+            }
+        }
+        private void FLstItems_MouseDown(object sender, MouseEventArgs e) {
+            var wIndex = FLstItems.IndexFromPoint(e.Location);
+
+            if (wIndex == ListBox.NoMatches) FLstItems.SelectedIndex = -1;
         }
         private void FBtnSearch_Click(object sender, EventArgs e) => RefreshList();
         private void FTxtSearch_KeyDown(object sender, KeyEventArgs e) {
