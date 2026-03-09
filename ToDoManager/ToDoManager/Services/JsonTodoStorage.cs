@@ -26,9 +26,9 @@ namespace ToDoManager.Services {
                     Converters = { new JsonStringEnumConverter() } // 優先度などのEnumを文字列としてシリアライズ/デシリアライズすることを想定
                 };
 
-                return JsonSerializer.Deserialize<List<TodoItem>>(wJsonString, wOptions);
+                return JsonSerializer.Deserialize<List<TodoItem>>(wJsonString, wOptions) ?? new List<TodoItem>();
             } catch (Exception ex) {
-                throw new InvalidDataException("ファイルのデータ形式が不正です。", ex);
+                throw new InvalidDataException($"ファイルのデータ形式が不正です: {ex.Message}", ex);
             }
         }
 

@@ -24,10 +24,10 @@ namespace ToDoManager.Services {
 
             try {
                 using (var wStreamReader = new StreamReader(vFilePath)) {
-                    return (List<TodoItem>)wSerializer.Deserialize(wStreamReader);
+                    return (List<TodoItem>)wSerializer.Deserialize(wStreamReader) ?? new List<TodoItem>();
                 }
-            } catch (InvalidOperationException ex) {
-                throw new InvalidDataException("ファイルのデータ形式が不正です。", ex);
+            } catch (Exception ex) {
+                throw new InvalidDataException($"ファイルのデータ形式が不正です: {ex.Message}", ex);
             }
         }
 

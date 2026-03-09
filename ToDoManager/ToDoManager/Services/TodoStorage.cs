@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 
@@ -10,14 +11,14 @@ namespace ToDoManager.Services {
         /// <summary>
         /// 拡張子と、それに対応するストレージインスタンス生成ロジックのマッピングを保持
         /// </summary>
-        private static readonly Dictionary<string, Func<ITodoStorage>> FRegistry = new Dictionary<string, Func<ITodoStorage>>();
+        private static readonly ConcurrentDictionary<string, Func<ITodoStorage>> C_Registry = new ConcurrentDictionary<string, Func<ITodoStorage>>();
 
         /// <summary>
         /// 特定の拡張子に対応するストレージ生成ロジックを登録
         /// </summary>
         /// <param name="vExtension">登録対象の拡張子</param>
-        /// <param name="vFacotry">対応するクラスのインスタンス</param>
-        public static void Register(string vExtension, Func<ITodoStorage> vFacotry) => FRegistry[vExtension] = vFacotry;
+        /// <param name="vFactory">対応するクラスのインスタンス</param>
+        public static void Register(string vExtension, Func<ITodoStorage> vFactory) => C_Registry[vExtension] = vFactory;
 
         /// <summary>
         /// ファイル選択ダイアログで使用可能なフィルターの文字列を生成
@@ -25,7 +26,7 @@ namespace ToDoManager.Services {
         /// <returns>フィルター文字列</returns>
         public static string GetFilter() {
             var wFilter = new List<string>();
-            foreach (var wKey in FRegistry.Keys) {
+            foreach (var wKey in C_Registry.Keys) {
                 var wDescription = wKey.Substring(1).ToUpper();
                 wFilter.Add($"{wDescription}ファイル (*{wKey})|*{wKey}");
             }
@@ -43,11 +44,11 @@ namespace ToDoManager.Services {
         public static ITodoStorage Create(string vFilePath) {
             var wExtension = Path.GetExtension(vFilePath)?.ToLower();
 
-            if (!string.IsNullOrWhiteSpace(wExtension) && FRegistry.TryGetValue(wExtension, out var wFactory)) {
+            if (!string.IsNullOrWhiteSpace(wExtension) && C_Registry.TryGetValue(wExtension, out var wFactory)) {
                 return wFactory();
             }
 
-            throw new NotSupportedException("サポートされていないファイルです。");
+            throw new NotSupportedException($"サポートされていないファイルです: {wExtension}");
         }
     }
 }

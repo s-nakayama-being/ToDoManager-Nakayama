@@ -11,7 +11,7 @@ namespace ToDoManagerTests.Stubs {
         /// <summary>
         /// 保存メソッドが呼ばれた際に、引数として渡されたアイテムの一覧を保持
         /// </summary>
-        public List<TodoItem> SavedItems { get; private set; }
+        public List<TodoItem> SavedItems { get; private set; } = new List<TodoItem>();
 
         /// <summary>
         /// ファイルを読込を行わず、あらかじめ用意したテスト用のデータを返す
