@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using ToDoManager.Models;
@@ -13,6 +14,8 @@ namespace ToDoManager {
         #region フィールド・初期化
 
         private readonly TodoService FService;
+
+        private SortStrategy FCurrentSort = SortStrategy.C_AddedOrder;
 
         public MainForm() {
             InitializeComponent();
@@ -42,11 +45,33 @@ namespace ToDoManager {
         /// 指定された条件を適用して画面を再描画
         /// </summary>
         private void RefreshList() {
+            FService.SortItems(FCurrentSort);
+
             var wSearchedItems = FService.SearchByTitle(FTxtSearch.Text);
 
-            // 今後、#602534で実装されたソート機能をこの行に追加することを想定
-
             UpdateList(wSearchedItems);
+        }
+
+        /// <summary>
+        /// ソートメニューの状態を更新
+        /// </summary>
+        /// <param name="vSortType"></param>
+        private void UpdateSortMenuState() {
+            sortByDueDateToolStripMenuItem.Checked = (FCurrentSort == SortStrategy.C_DueDate);
+            sortByAddedOrderToolStripMenuItem.Checked = (FCurrentSort == SortStrategy.C_AddedOrder);
+        }
+
+        /// <summary>
+        /// 指定されたソートを適用し、ToDoリストを更新
+        /// </summary>
+        /// <param name="vSortType">ソートの種類</param>
+        private void ApplySort(SortStrategy vSortType) {
+            if (FCurrentSort == vSortType) return;
+
+            FCurrentSort = vSortType;
+
+            RefreshList();
+            UpdateSortMenuState();
         }
 
         #endregion
@@ -107,6 +132,33 @@ namespace ToDoManager {
             RefreshList();
         }
 
+        /// <summary>
+        /// アイテムの詳細を表示
+        /// </summary>
+        /// <param name="vItem">表示対象のアイテム</param>
+        private void DisplayItemDetails(TodoItem vItem) {
+            FTxtTitle.Text = vItem.Title;
+            FTxtContent.Text = vItem.Content;
+            FDtpDueDate.Text = vItem.DueDate.ToString("yyyy/M/d");
+            FChkDone.Checked = vItem.IsCompleted;
+            FCmbPriority.SelectedIndex = (int)vItem.Priority;
+
+            FTxtTitle.BackColor = (!vItem.IsCompleted && vItem.DueDate < DateTime.Today) ? Color.Yellow : SystemColors.Control;
+        }
+
+        /// <summary>
+        /// 詳細表示エリアをクリア
+        /// </summary>
+        private void ClearDetailDisplay() {
+            FTxtTitle.Text = string.Empty;
+            FTxtContent.Text = string.Empty;
+            FDtpDueDate.Text = string.Empty;
+            FChkDone.Checked = false;
+            FCmbPriority.SelectedIndex = -1;
+            FTxtTitle.BackColor = SystemColors.Control;
+        }
+
+
         #endregion
 
         #region イベントハンドラ
@@ -143,9 +195,20 @@ namespace ToDoManager {
                 }
             }
         }
-        private void SortByDueDateToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByDueDate();
-        private void SortByAddedOrderToolStripMenuItem_Click(object sender, EventArgs e) => FService.SortByAddedOrder();
+        private void SortByDueDateToolStripMenuItem_Click(object sender, EventArgs e) => ApplySort(SortStrategy.C_DueDate);
+        private void SortByAddedOrderToolStripMenuItem_Click(object sender, EventArgs e) => ApplySort(SortStrategy.C_AddedOrder);
+        private void FLstItems_SelectedIndexChanged(object sender, EventArgs e) {
+            if (FLstItems.SelectedItem is TodoItem wSelectedItem) {
+                DisplayItemDetails(wSelectedItem);
+            } else {
+                ClearDetailDisplay();
+            }
+        }
+        private void FLstItems_MouseDown(object sender, MouseEventArgs e) {
+            var wIndex = FLstItems.IndexFromPoint(e.Location);
 
+            if (wIndex == ListBox.NoMatches) FLstItems.SelectedIndex = -1;
+        }
         private void FBtnSearch_Click(object sender, EventArgs e) => RefreshList();
         private void FTxtSearch_KeyDown(object sender, KeyEventArgs e) {
             if (e.KeyCode == Keys.Enter) {
