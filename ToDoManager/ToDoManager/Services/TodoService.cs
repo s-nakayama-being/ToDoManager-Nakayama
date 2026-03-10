@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Xml.Serialization;
 using ToDoManager.Models;
 
 namespace ToDoManager.Services {
@@ -15,17 +13,21 @@ namespace ToDoManager.Services {
 
         private List<TodoItem> FItems = new List<TodoItem>();
         private int FNextId = 1;
-        private static readonly string C_FilePath = "todos.xml";
+        private readonly Func<string, ITodoStorage> FStorageProvider;
 
         #endregion
 
         /// <summary>
-        /// コンストラクタ
+        /// 新しいインスタンスの初期化
         /// </summary>
-        public TodoService() {
-        }
+        public TodoService(Func<string, ITodoStorage> vProvider) => FStorageProvider = vProvider;
 
         #region publicメソッド
+
+        /// <summary>
+        /// ファイル選択ダイアログで使用する保存形式に対応したフィルター文字列を取得する
+        /// </summary>
+        public string FileFilter => TodoStorage.GetFilter();
 
         /// <summary>
         /// ToDoアイテムの一覧を取得する
@@ -96,35 +98,26 @@ namespace ToDoManager.Services {
         }
 
         /// <summary>
-        /// XMLで保存
+        /// ToDoアイテムを任意のファイルで保存
         /// </summary>
-        public void Export() {
-            var wSerializer = new XmlSerializer(typeof(List<TodoItem>));
+        public void Export(string vFilePath) {
+            if (string.IsNullOrWhiteSpace(vFilePath)) throw new ArgumentException("ファイルパスが指定されていません。");
 
-            using (var wWriter = new StreamWriter(C_FilePath)) {
-                wSerializer.Serialize(wWriter, FItems);
-            }
+            var wStorage = FStorageProvider(vFilePath);
+            wStorage.Save(vFilePath, FItems);
         }
 
         /// <summary>
-        /// XMLで読込
+        /// 任意のファイルからToDoアイテムを読込
         /// </summary>
-        public bool Import() {
-            if (!File.Exists(C_FilePath)) return false;
+        public void Import(string vFilePath) {
+            if (string.IsNullOrWhiteSpace(vFilePath)) throw new ArgumentException("ファイルパスが指定されていません。");
 
-            var wSerializer = new XmlSerializer(typeof(List<TodoItem>));
+            var wStorage = FStorageProvider(vFilePath);
+            var wLoadedItems = wStorage.Load(vFilePath);
 
-            try {
-                using (var wStreamReader = new StreamReader(C_FilePath)) {
-                    FItems = (List<TodoItem>)wSerializer.Deserialize(wStreamReader);
-                }
-            } catch (InvalidOperationException ex) {
-                throw new InvalidDataException("ファイルのデータ形式が不正です。", ex);
-            }
-
+            FItems = wLoadedItems.ToList();
             FNextId = FItems.Any() ? FItems.Max(x => x.Id) + 1 : 1;
-
-            return true;
         }
 
         /// <summary>

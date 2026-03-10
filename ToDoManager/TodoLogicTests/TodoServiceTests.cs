@@ -4,6 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using ToDoManager.Models;
 using ToDoManager.Services;
+using ToDoManagerTests.Stubs;
 
 namespace ToDoManagerTests {
     /// <summary>
@@ -11,11 +12,9 @@ namespace ToDoManagerTests {
     /// </summary>
     [TestFixture]
     public class TodoServiceTests {
-        #region 基本機能テスト
+        #region フィールド・初期化
 
-        /// <summary>
-        /// テスト対象のTodoServiceインスタンスを保持するフィールド
-        /// </summary>
+        private StubStorage FStub;
         private TodoService FService;
 
         /// <summary>
@@ -23,8 +22,13 @@ namespace ToDoManagerTests {
         /// </summary>
         [SetUp]
         public void Init() {
-            FService = new TodoService();
+            FStub = new StubStorage();
+            FService = new TodoService(vPath => FStub);
         }
+
+        #endregion
+
+        #region 基本機能テスト
 
         /// <summary>
         /// AddOrUpdateで新規アイテムが追加されること
@@ -104,66 +108,6 @@ namespace ToDoManagerTests {
             var wItems = FService.GetItems().ToList();
             Assert.That(wItems[0].Title, Is.EqualTo("Test1"), "追加順（ID順）に並んでいること");
             Assert.That(wItems[1].Title, Is.EqualTo("Test2"));
-        }
-
-        #endregion
-
-        #region 保存・読込機能テスト
-
-        [TearDown]
-        public void Cleanup() {
-            if (File.Exists("todos.xml")) {
-                File.Delete("todos.xml");
-            }
-        }
-
-        [Test]
-        public void Export_正常なToDoリストを保存する場合_例外が発生しない() {
-            var wItem = new TodoItem { Title = "テスト", DueDate = DateTime.Today, IsCompleted = false };
-            FService.AddOrUpdate(wItem);
-
-            FService.Export();
-
-            Assert.That(File.Exists("todos.xml"), Is.True, "ファイルが作成されること");
-            var wXmlContent = File.ReadAllText("todos.xml");
-            Assert.That(wXmlContent, Does.Contain("<Title>テスト</Title>"), "保存されたXMLにアイテムのタイトルが含まれること");
-        }
-
-        [Test]
-        public void Import_正常なXmlファイルからデータを読み込む場合_例外が発生しない() {
-            var wValidateXml =
-                @"<?xml version=""1.0"" encoding=""utf-8""?>
-                    <ArrayOfTodoItem>
-                        <TodoItem>
-                            <Id>1</Id>
-                            <Title>テスト</Title>
-                            <IsCompleted>false</IsCompleted>
-                        </TodoItem>
-                    </ArrayOfTodoItem>";
-            File.WriteAllText("todos.xml", wValidateXml);
-
-            bool wImportResult = FService.Import();
-
-            Assert.That(wImportResult, Is.True, "正常なXmlファイルからの読込はtrueを返すこと");
-            var wLoadedItems = FService.GetItems().ToList();
-            Assert.That(wLoadedItems.Count, Is.EqualTo(1), "アイテムが1件読み込まれること");
-            Assert.That(wLoadedItems[0].Title, Is.EqualTo("テスト"), "読み込まれたアイテムのタイトルが一致すること");
-        }
-
-        [Test]
-        public void Import_ファイルが存在しない場合_falseを返す() {
-            bool wImportResult = FService.Import();
-
-            Assert.That(wImportResult, Is.False, "ファイルが存在しない場合はfalseを返すこと");
-        }
-
-        [TestCase("<InvalidData>不正データ</InvalidData>", Description = "不正なXmlタグ：異常系")]
-        [TestCase("", Description = "空ファイル：異常系")]
-        [TestCase("ただのテキスト", Description = "Xml形式ではない内容：異常系")]
-        public void Import_ファイルのデータ形式が不正な場合_InvalidDataExceptionが発生する(string vFileContent) {
-            File.WriteAllText("todos.xml", vFileContent);
-
-            Assert.That(() => FService.Import(), Throws.TypeOf<InvalidDataException>(), "ファイルのデータ形式が不正な場合はInvalidDataExceptionが発生すること");
         }
 
         #endregion
@@ -283,6 +227,50 @@ namespace ToDoManagerTests {
             var wContent = new string('a', vLength);
 
             Assert.That(() => TodoService.ValidateItem(vTitle, wContent), Throws.ArgumentException.With.Message.Contain(vExpectedErrorMsg));
+        }
+
+        #endregion
+
+        #region 保存・読込機能テスト
+
+        [Test]
+        public void Export_正常なファイルパスの場合_ストレージのSaveが呼び出されること() {
+            var wItem = new TodoItem { Title = "ExportTest" };
+            FService.AddOrUpdate(wItem);
+
+            FService.Export("dummy.json");
+
+            Assert.That(FStub.SavedItems, Is.Not.Null);
+            Assert.That(FStub.SavedItems.Count, Is.EqualTo(1));
+            Assert.That(FStub.SavedItems[0].Title, Is.EqualTo("ExportTest"));
+        }
+
+        [Test]
+        public void Import_正常なファイルパスの場合_ストレージのLoadが呼び出されること() {
+            FService.Import("dummy.json");
+
+            var wItems = FService.GetItems().ToList();
+            Assert.That(wItems[0].Id, Is.EqualTo(55));
+            Assert.That(wItems[0].Title, Is.EqualTo("Test"));
+        }
+
+        [TestCase(null, Description = "ファイルパス空：異常系")]
+        [TestCase("", Description = "ファイルパス空：異常系")]
+        [TestCase("   ", Description = "ファイルパス空白：異常系")]
+        public void Export_ファイルパスが空の場合_ArgumentExceptionが発生すること(string vFilePath) {
+            Assert.That(() => FService.Export(vFilePath), Throws.ArgumentException);
+        }
+
+        [TestCase(null, Description = "ファイルパス空：異常系")]
+        [TestCase("", Description = "ファイルパス空：異常系")]
+        [TestCase("   ", Description = "ファイルパス空白：異常系")]
+        public void Import_ファイルパスが空の場合_ArgumentExceptionが発生すること(string vFilePath) {
+            Assert.That(() => FService.Import(vFilePath), Throws.ArgumentException);
+        }
+
+        [Test]
+        public void Create_サポートされていない拡張子の場合_NotSupportedExceptionが発生すること() {
+            Assert.That(() => TodoStorage.Create("test.invalid"), Throws.TypeOf<NotSupportedException>());
         }
 
         #endregion

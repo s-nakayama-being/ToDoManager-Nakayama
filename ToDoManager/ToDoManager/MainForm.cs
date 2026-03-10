@@ -13,12 +13,17 @@ namespace ToDoManager {
     public partial class MainForm : Form {
         #region フィールド・初期化
 
-        private readonly TodoService FService = new TodoService();
+        private readonly TodoService FService;
 
         private SortStrategy FCurrentSort = SortStrategy.C_AddedOrder;
 
         public MainForm() {
             InitializeComponent();
+
+            TodoStorage.Register(".json", () => new JsonTodoStorage());
+            TodoStorage.Register(".xml", () => new XmlTodoStorage());
+
+            FService = new TodoService(TodoStorage.Create);
 
             RefreshList();
         }
@@ -82,10 +87,10 @@ namespace ToDoManager {
                     try {
                         FService.AddOrUpdate(wForm.Item);
                         RefreshList();
-                    } catch (ArgumentException wEx) {
-                        MessageBox.Show(this, wEx.Message, "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    } catch (Exception wEx) {
-                        MessageBox.Show(this, $"保存に失敗しました：{wEx.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    } catch (ArgumentException ex) {
+                        MessageBox.Show(this, ex.Message, "入力エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    } catch (Exception ex) {
+                        MessageBox.Show(this, $"保存に失敗しました：{ex.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
@@ -101,8 +106,8 @@ namespace ToDoManager {
                         try {
                             FService.AddOrUpdate(wForm.Item);
                             RefreshList();
-                        } catch (Exception wEx) {
-                            MessageBox.Show(this, $"保存に失敗しました：{wEx.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        } catch (Exception ex) {
+                            MessageBox.Show(this, $"保存に失敗しました：{ex.Message}", "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                 }
@@ -161,17 +166,37 @@ namespace ToDoManager {
         private void FBtnAdd_Click(object sender, EventArgs e) => AddItem();
         private void FBtnEdit_Click(object sender, EventArgs e) => EditItem();
         private void FBtnDelete_Click(object sender, EventArgs e) => DeleteItem();
-        private void FBtnXml_Click(object sender, EventArgs e) => FService.Export();
-        private void SortByDueDateToolStripMenuItem_Click(object sender, EventArgs e) => ApplySort(SortStrategy.C_DueDate);
-        private void SortByAddedOrderToolStripMenuItem_Click(object sender, EventArgs e) => ApplySort(SortStrategy.C_AddedOrder);
-        private void FBtnLoad_Click(object sender, EventArgs e) {
-            if (FService.Import()) {
-                RefreshList();
-                MessageBox.Show(this, "データを読み込みました。", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            } else {
-                MessageBox.Show(this, "指定ファイルが存在しません", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        private void FBtnSave_Click(object sender, EventArgs e) {
+            using (var wDialog = new SaveFileDialog()) {
+                wDialog.Filter = FService.FileFilter;
+
+                if (wDialog.ShowDialog() == DialogResult.OK) {
+                    try {
+                        FService.Export(wDialog.FileName);
+                        MessageBox.Show(this, "データを保存しました", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    } catch (Exception ex) {
+                        MessageBox.Show(this, $"データの保存に失敗しました：{ex.Message}", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
             }
         }
+        private void FBtnLoad_Click(object sender, EventArgs e) {
+            using (var wDialog = new OpenFileDialog()) {
+                wDialog.Filter = FService.FileFilter;
+
+                if (wDialog.ShowDialog() == DialogResult.OK) {
+                    try {
+                        FService.Import(wDialog.FileName);
+                        RefreshList();
+                        MessageBox.Show(this, "データを読み込みました", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    } catch (Exception ex) {
+                        MessageBox.Show(this, $"データの読み込みに失敗しました：{ex.Message}", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+        private void SortByDueDateToolStripMenuItem_Click(object sender, EventArgs e) => ApplySort(SortStrategy.C_DueDate);
+        private void SortByAddedOrderToolStripMenuItem_Click(object sender, EventArgs e) => ApplySort(SortStrategy.C_AddedOrder);
         private void FLstItems_SelectedIndexChanged(object sender, EventArgs e) {
             if (FLstItems.SelectedItem is TodoItem wSelectedItem) {
                 DisplayItemDetails(wSelectedItem);
