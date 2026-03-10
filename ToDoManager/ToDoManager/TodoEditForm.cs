@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DevExpress.Utils.Internal;
+using System;
 using System.Windows.Forms;
 using ToDoManager.Models;
 using ToDoManager.Services;
@@ -61,10 +62,22 @@ namespace ToDoManager {
 
         #region イベントハンドラ
 
-        /// <summary>
-        /// 保存ボタンがクリックされたときの処理
-        /// </summary>
         private void FBtnSave_Click(object sender, EventArgs e) => SaveItem();
+        protected override bool ProcessCmdKey(ref Message vMsg, Keys vKeyData) {
+            if (vKeyData == Keys.Enter){
+                switch (ActiveControl){
+                    case ComboBox wCmb when wCmb == FCmbPriority:
+                        wCmb.DroppedDown = !wCmb.DroppedDown;
+                        return true;
+
+                    case CheckBox wChk when wChk == FChkDone:
+                        wChk.Checked = !wChk.Checked;
+                        return true;
+                }
+            }
+
+            return base.ProcessCmdKey(ref vMsg, vKeyData);
+        }
 
         #endregion
     }
